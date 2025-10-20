@@ -1,6 +1,3 @@
-
-
-
 ;;benchmark-init
 ;; (use-package benchmark-init
 ;;   :ensure t
@@ -14,11 +11,10 @@
     :config
     (setq company-minimum-prefix-length 1) ; 只需敲 1 个字母就开始进行自动补全
     (setq company-tooltip-align-annotations t)
-    (setq company-idle-delay 0.0)
+    (setq company-idle-delay 0.1)
     (setq company-show-numbers t)   ;; 给选项编号 (按快捷键 M-1、M-2 等等来进行选择).
     (setq company-selection-wrap-around t)
     (setq company-transformers '(company-sort-by-occurrence)))
-
 
 
 (use-package company-box
@@ -27,9 +23,9 @@
     :hook (company-mode . company-box-mode))
 
 
-
 (use-package yasnippet
     :ensure t
+    :defer t
     :hook
     (prog-mode . yas-minor-mode)
     :config
@@ -54,10 +50,15 @@
 
 (use-package lsp-mode
     :ensure t
+    :defer t
     :init
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     (setq lsp-keymap-prefix "C-c l"
-	lsp-file-watch-threshold 500)
+	  lsp-file-watch-threshold 5000
+	  lsp-completion-enable t
+	  lsp-completion-enable-snippets t
+	  lsp-inlay-hint-enable nil
+	  )
     :hook  (lsp-mode . lsp-enable-which-key-integration) ; which-key integration
     :commands (lsp lsp-deferred)
     :config
@@ -65,7 +66,6 @@
     (setq lsp-headerline-breadcrumb-enable t)
     :bind
     ("C-c l s" . lsp-ivy-workspace-symbol)) 
-
 
 (use-package lsp-ui
     :ensure t

@@ -4,13 +4,15 @@
 (scroll-bar-mode -1)                                                                                
 (show-paren-mode t)                                           
 (electric-pair-mode t)                                         
-(global-hl-line-mode -1)                                         
+(global-hl-line-mode -1)
+(global-font-lock-mode 1)
 (global-auto-revert-mode 1)                                     
 (delete-selection-mode 1)                                  
-(fset 'yes-or-no-p 'y-or-n-p)                                
+(fset 'yes-or-no-p 'y-or-n-p)
 (setq-default cursor-type 'bar)                               
 (setq                                    
       frame-title-mode t                                       
+      font-lock-maximum-size 5000000
       frame-title-format "filename: %b"                            
       inhibit-splash-screen t                                   
       gnus-inhibit-startup-message t                          
@@ -44,7 +46,15 @@
   "Nothing to dirty minibuffer if this option is non-nil."
   :type 'boolean
   :group 'auto-save)
- 
+
+;;set font
+(custom-set-faces'(default ((t(:family "Courier New" :foundry "outline" :slant normal :weight normal :height 120 :width normal)))))
+
+(dolist (charset '(kana han symbol cjk-misc bopomofo))
+  (set-fontset-font (frame-parameter nil 'font)
+  charset
+  (font-spec :family "Microsoft Yahei" :size 20)))
+
 (setq auto-save-default nil)
  
 (defun auto-save-buffers ()
