@@ -11,3 +11,29 @@ cd build/
 cmake
 cmake ..
 cmake --build .
+qwem
+qwen
+ssh root@101.33.199.204
+pwsh
+cd ..
+cd build/
+cmake ..
+cmake --build .
+ctest
+clangd --check=main.cpp
+clangd --check=main.cpp
+clear
+clangd --check=main.cpp
+gcc --check
+gcc --check=main.cpp
+gcc --check
+clandg
+cland
+cd build/
+cmake ..
+cmake --build
+cmake --build .
+cmake --build .
+HelloWorld.exe
+.\HelloWorld.exe
+.\HelloWorld

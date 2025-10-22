@@ -119,6 +119,7 @@
   (require 'lsp-bridge)
   (setq lsp-bridge-c-lsp-server "clangd")
   (setq lsp-bridge-python-command "C:\\Users\\SallyFace\\AppData\\Local\\Programs\\Python\\Python313\\python.exe")
+  (setq lsp-bridge-enable-log t)
   (global-lsp-bridge-mode)
   (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -138,4 +139,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(zenburn-theme benchmark-init neotree)))
+ '(package-selected-packages '(powershell zenburn-theme benchmark-init neotree)))
