@@ -34,7 +34,7 @@
         c-default-style "awk"                                      
         initial-frame-alist (quote ((fullscreen . maximized)))    
   )
-  (load-theme 'wheatgrass)
+  (load-theme 'zenburn t)
   (global-display-line-numbers-mode 1)
   
   ;; auto save code conf
@@ -112,12 +112,13 @@
     (package-refresh-contents))
   (add-to-list 'load-path (expand-file-name "packages" user-emacs-directory))
   (require 'init_third_package)
-  (require 'simpc-mode)
-  (add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
   (add-to-list 'load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
+  (add-to-list 'auto-mode-alist '("\\.\\(c\\|h\\|cpp\\|hpp\\|cc\\|hh\\)$" . c-mode))
   (require 'yasnippet)  
   (yas-global-mode 1)
   (require 'lsp-bridge)
+  (setq lsp-bridge-c-lsp-server "clangd")
+  (setq lsp-bridge-python-command "C:\\Users\\SallyFace\\AppData\\Local\\Programs\\Python\\Python313\\python.exe")
   (global-lsp-bridge-mode)
   (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -126,16 +127,15 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages '(benchmark-init neotree)))
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(which-key dap-mode lsp-mode orderless @ vertico benchmark-init neotree)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 120 :width normal)))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(zenburn-theme benchmark-init neotree)))

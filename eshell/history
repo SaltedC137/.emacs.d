@@ -1,0 +1,13 @@
+git rev-parse --is-inside-work-tree
+clangd
+clangd
+clangd --version
+cd ..
+where clangd
+cd b
+cd .
+cd ..
+cd build/
+cmake
+cmake ..
+cmake --build .
