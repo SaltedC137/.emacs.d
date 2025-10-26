@@ -133,7 +133,6 @@
   (global-lsp-bridge-mode)
 )
 
-
 (defun powershell (&optional buffer)
   "Launches a powershell in buffer *powershell* and switches to it."
   (interactive)
