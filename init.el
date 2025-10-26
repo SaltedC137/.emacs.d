@@ -1,4 +1,5 @@
 (let (
+  ;; benchmaek - init 
   (gc-cons-threshold most-positive-fixnum)
   (file-name-handler-alist nil))
   (require 'benchmark-init-modes)
@@ -12,7 +13,9 @@
   (electric-pair-mode t)                                         
   (global-hl-line-mode -1)
   (global-font-lock-mode 1)
-  (global-auto-revert-mode 1)                                     
+  (global-auto-revert-mode 1)       
+  (global-set-key (kbd "C-=") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
   (delete-selection-mode 1)                                  
   (fset 'yes-or-no-p 'y-or-n-p)
   (setq-default cursor-type 'bar)                               
@@ -43,7 +46,7 @@
     "Auto save file when emacs idle."
     :group 'auto-save)
   
-  (defcustom auto-save-idle 15
+  (defcustom auto-save-idle 2
     "The idle seconds to auto save file."
     :type 'integer
     :group 'auto-save)
@@ -65,7 +68,7 @@
   (dolist (charset '(kana han symbol cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font)
     charset
-    (font-spec :family "Microsoft Yahei" :size 20)))
+    (font-spec :family "Microsoft Yahei")))
 
   (setq auto-save-default nil)
   
@@ -114,20 +117,31 @@
   (require 'init_third_package)
   (add-to-list 'load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
   (add-to-list 'auto-mode-alist '("\\.\\(c\\|h\\|cpp\\|hpp\\|cc\\|hh\\)$" . c-mode))
+  (add-to-list 'auto-mode-alist '("\\CMakeLists\\.txt\\'" . cmake-mode))
   (require 'yasnippet)  
   (yas-global-mode 1)
   (require 'lsp-bridge)
+  ;; == server seting == 
+
   (setq lsp-bridge-c-lsp-server "clangd")
+  (setq lsp-bridge-cmake-lsp-server "cmake-language-server")
+  (setq lsp-bridge-org-babel-lang-list nil)
+  (setq lsp-bridge-enable-org-babel t)
+  (setq lsp-bridge-use-ds-pinyin-in-org-mode t)
   (setq lsp-bridge-python-command "C:\\Users\\SallyFace\\AppData\\Local\\Programs\\Python\\Python313\\python.exe")
   (setq lsp-bridge-enable-log t)
   (global-lsp-bridge-mode)
-  (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages '(benchmark-init neotree)))
 )
+
+
+(defun powershell (&optional buffer)
+  "Launches a powershell in buffer *powershell* and switches to it."
+  (interactive)
+  (let ((buffer (or buffer "*powershell*"))
+    (powershell-prog "C:\\Program Files\\PowerShell\\7\\pwsh.exe"))
+    (make-comint-in-buffer "shell" "*powershell*" powershell-prog)
+    (switch-to-buffer buffer)))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -139,4 +153,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(powershell zenburn-theme benchmark-init neotree)))
+ '(package-selected-packages
+   '(nerd-icons nerd-icons-dired dirvish org-superstar spacemacs-theme cmake-mode exec-path-from-shell gruber-darker-theme powershell zenburn-theme benchmark-init neotree)))
+
