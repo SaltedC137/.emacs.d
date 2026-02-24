@@ -15,7 +15,12 @@
 (acs/custom:appdata/ package-user-dir /)
 
 (setopt network-security-level 'low)
-
+;; 1. 其它 ELPA 中的包会依赖“gnu”中的包.
+;; 2. “Melpa”滚动升级, 收录的包的数量最大.
+;; 3. “Stable-melpa”依据源码的 tag (Git) 升级, 数量比“melpa”少, 因为很多包作者根本不打 tag.
+;; 4. “Org”仅仅为了‘org-plus-contrib’这一个包, Org 重度用户使用.
+;; 5. “Gnu-devel”收录“gnu”中的包的开发中版本 (类似于“melpa”与“stable-melpa”的关系).
+;; 6. “Nongnu-devel”收录“nongnu”中的包的开发中版本.
 (setopt package-archives '(
                         ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
@@ -27,6 +32,8 @@
                                     ("nongnu" . 0)
                                     ("melpa"  . 1))
     package-menu-hide-low-priority t)
+
+(setopt package-check-signature nil)
 
 (provide 'acs-package)
 
