@@ -18,6 +18,7 @@
 
 (defmacro acs/c:appdata/ (base &optional suffix seq-type &rest forms)
 
+
 (declare (indent 3))
 `(set ',base
       ,(if forms
