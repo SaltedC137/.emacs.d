@@ -1,7 +1,5 @@
 # ACS Emacs Configuration
 
-个人定制的 Emacs 配置，注重性能优化和美观的 UI。
-
 ## 🚀 快速开始
 
 ### 环境要求
