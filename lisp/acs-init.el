@@ -86,7 +86,7 @@
 ;; (require 'acs-yas)      ; (find-file-other-window "./acs-yas.el")
 ;; (require 'acs-profile)  ; (find-file-other-window "./acs-profile.el")
 ;; (require 'acs-startup)  ; (find-file-other-window "./acs-startup.el")
-;; (require 'acs-ui)       ; (find-file-other-window "./acs-ui.el")
+(require 'acs-ui)       ; (find-file-other-window "./acs-ui.el")
 ;; (require 'acs-lib)      ; (find-file-other-window "./acs-lib.el")
 
 (provide 'acs-init)
