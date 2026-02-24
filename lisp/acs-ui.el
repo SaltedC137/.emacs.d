@@ -151,7 +151,65 @@
     window-divider-default-right-width 12)
 (window-divider-mode)
 
+;; Frame Title 
 
+
+
+
+
+;;; Menu Bar:
+
+(keymap-global-unset "<menu-bar> <file> <close-tab>")
+(keymap-global-unset "<menu-bar> <file> <delete-this-frame>")
+(keymap-global-unset "<menu-bar> <file> <exit-emacs>")
+(keymap-global-unset "<menu-bar> <file> <kill-buffer>")
+(keymap-global-unset "<menu-bar> <file> <make-frame>")
+(keymap-global-unset "<menu-bar> <file> <make-tab>")
+(keymap-global-unset "<menu-bar> <file> <new-window-below>")
+(keymap-global-unset "<menu-bar> <file> <new-window-on-right>")
+(keymap-global-unset "<menu-bar> <file> <one-window>")
+(keymap-global-unset "<menu-bar> <file> <open-file>")
+(keymap-global-unset "<menu-bar> <file> <save-buffer>")
+
+(keymap-global-unset "<menu-bar> <edit> <copy>")
+(keymap-global-unset "<menu-bar> <edit> <cut>")
+(keymap-global-unset "<menu-bar> <edit> <mark-whole-buffer>")
+(keymap-global-unset "<menu-bar> <edit> <paste>")
+(keymap-global-unset "<menu-bar> <edit> <undo-redo>")
+(keymap-global-unset "<menu-bar> <edit> <undo>")
+
+(keymap-global-unset "<menu-bar> <options> <cua-mode>")
+(keymap-global-unset "<menu-bar> <options> <customize> <customize-saved>")
+(keymap-global-unset "<menu-bar> <options> <save>")
+(keymap-global-unset "<menu-bar> <options> <uniquify>")
+(keymap-global-unset "<menu-bar> <options> <save-place>")
+(keymap-global-unset "<menu-bar> <options> <transient-mark-mode>")
+(keymap-global-unset "<menu-bar> <options> <highlight-paren-mode>")
+
+(keymap-global-unset "<menu-bar> <buffer> <select-named-buffer>")
+
+(keymap-global-unset "<menu-bar> <tools> <browse-web>")
+(keymap-global-unset "<menu-bar> <tools> <gnus>")
+
+
+;;; Imenu
+(setopt imenu-auto-rescan t
+        ;; Buffer 很大, ‘imenu’你忍一下.
+        imenu-auto-rescan-maxout most-positive-fixnum
+        ;; 超过 这几秒 就算了.
+        imenu-max-index-time (* 0.3 idle-update-delay))
+(setopt imenu-sort-function #'imenu--sort-by-name)
+;; (add-hook 'XXX-mode-hook #'imenu-add-menubar-index)
+
+(keymap-global-unset "<menu-bar> <help-menu> <about-emacs>")
+(keymap-global-unset "<menu-bar> <help-menu> <about-gnu-project>")
+(keymap-global-unset "<menu-bar> <help-menu> <describe-copying>")
+(keymap-global-unset "<menu-bar> <help-menu> <describe-no-warranty>")
+(keymap-global-unset "<menu-bar> <help-menu> <emacs-manual>")
+(keymap-global-unset "<menu-bar> <help-menu> <emacs-tutorial>")
+(keymap-global-unset "<menu-bar> <help-menu> <external-packages>")
+(keymap-global-unset "<menu-bar> <help-menu> <getting-new-versions>")
+(keymap-global-unset "<menu-bar> <help-menu> <more-manuals> <order-emacs-manuals>")
 
 (provide 'acs-ui)
 
