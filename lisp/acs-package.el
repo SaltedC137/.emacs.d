@@ -12,7 +12,7 @@
         ;; 这其实是 默认行为.
         package-enable-at-startup t)
 
-(acs/custom:appdata/ package-user-dir /)
+(acs/c:appdata/ package-user-dir /)
 
 (setopt network-security-level 'low)
 ;; 1. 其它 ELPA 中的包会依赖“gnu”中的包.
