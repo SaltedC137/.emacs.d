@@ -35,6 +35,42 @@
 
 (setopt package-check-signature nil)
 
+(setopt package-selected-packages '(ivy
+                                    sly
+                                    embark
+                                    swiper
+                                    company
+                                    helpful
+                                    htmlize
+                                    keycast
+                                    neotree
+                                    git-modes
+                                    on-screen
+                                    yaml-mode
+                                    yasnippet
+                                    drag-stuff
+                                    marginalia
+                                    powershell
+                                    ascii-table
+                                    textile-mode
+                                    rainbow-mode
+                                    all-the-icons
+                                    doom-modeline
+                                    markdown-mode
+                                    page-break-lines
+                                    company-quickhelp
+                                    rainbow-delimiters
+                                    highlight-parentheses
+                                    )
+        package-load-list '(all))
+
+;; 安装实用软件包
+(ignore-errors  
+    (package-upgrade-all)  
+    (package-install-selected-packages t)
+;; (package-autoremove)  
+)
+
 (provide 'acs-package)
 
 ;; Local Variables:

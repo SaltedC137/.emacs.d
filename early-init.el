@@ -30,7 +30,6 @@
 (setq force-load-messages t)
 (setopt load-prefer-newer nil)
 
-()
 (require 'acs-early-init)  ; (find-file-other-window "./lisp/acs-early-init.el")
 
 ;; Local Variables:
