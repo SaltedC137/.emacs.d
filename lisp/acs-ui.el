@@ -1,6 +1,121 @@
 ;;; -*- lexical-binding: t; -*-
 
 
+'(overline-margin 0 nil () "上划线的高度+宽度")
+'(mouse-highlight t nil () "当鼠标位于clickable位置时,高亮此处的文本")
+
+
+
+(add-hook 'emacs-startup-hook  ; 在调用 ‘frame-notice-user-settings’ 前运行.
+        (lambda ()
+        ;; 摘编自 Centaur Emacs, 用于解决 字体 问题.
+        (let* ((font       "Maple Mono NF CN:slant:weight=medium:width=normal:spacing")
+                (attributes (font-face-attributes font)                                   )
+                (family     (plist-get attributes :family)                                ))
+            ;; Default font.
+            (apply #'set-face-attribute
+                    'default nil
+                    attributes)
+            ;; For all Unicode characters.
+            (set-fontset-font t 'symbol
+                            (font-spec :family "Segoe UI Symbol")
+                            nil 'prepend)
+            ;; Emoji 🥰.
+            (set-fontset-font t 'emoji
+                            (font-spec :family "Segoe UI Emoji")
+                            nil 'prepend)
+            ;; For Chinese characters.
+            (set-fontset-font t '(#x4e00 . #x9fff)
+                            (font-spec :family family)))
+
+        (custom-set-faces
+            '(cursor
+            ((t . (:background "chartreuse")))
+            nil
+            "该 face 仅有 ‘:background’ 字段有效")
+            '(tooltip
+            ((t . ( :height     100
+                    :background "dark slate gray"))))
+            '(line-number
+            ((t . ( :slant  italic
+                    :weight light))))
+            `(line-number-major-tick
+            ((t . ( :foreground ,(face-attribute 'line-number :foreground)
+                    :background ,(face-attribute 'line-number :background)
+                    :slant      italic
+                    :underline  t
+                    :weight     light)))
+            nil
+            "指定倍数的行号;除此以外,还有‘line-number-minor-tick’实现相同的功能,但其优先级更低")
+            '(line-number-current-line
+            ((t . ( :slant  normal
+                    :weight black))))
+            '(window-divider
+            ((t . (:foreground "SlateBlue4"))))
+            ;; ;; 我把 ‘indent-guide’ 删了.
+            ;; (setq indent-guide-recursive t
+            ;;       indent-guide-char "\N{BOX DRAWINGS LIGHT VERTICAL}")
+            '(indent-guide-face
+            ((t . (:foreground "dark sea green"))))
+            '(fill-column-indicator
+            ((t . ( :inherit shadow
+                    :height  unspecified  ; 使其跟随整体缩放.
+                    :background "black"
+                    :foreground "yellow")))))))
+
+
+(add-to-list 'default-frame-alist '(left  . 301))
+(add-to-list 'default-frame-alist '(width . 66))
+(add-to-list 'default-frame-alist '(top    . 121))
+(add-to-list 'default-frame-alist '(height . 26))
+
+(keymap-global-set "C-c z"
+                (lambda ()
+                    (interactive)
+                    (set-frame-parameter nil 'fullscreen nil)
+                    (let-alist default-frame-alist
+                    (set-frame-position nil .left .top)
+                    (set-frame-size nil .width .height))))
+
+(setopt frame-background-mode nil)
+
+(setopt frame-resize-pixelwise t)
+
+
+(add-to-list 'default-frame-alist
+             `(,(pcase system-type
+                  ("TODO: Dunno how to test whether the platform supports this parameter." 'alpha-background)
+                  (_ 'alpha))
+               . 90))
+
+
+;; +-----------------------------------------+
+;; |‘stored?’ => nil.  Daemon is initialized.|
+;; |‘getter’ is in ‘server-*-make-*-hook’.   |
+;; +---------------------+-------------------+
+;;                       |
+;;  No frame on desktop. | Let’s _make_ one.
+;;                       V                          Because ‘stored?’ is t, the frame to make will
+;; +------------------------------------------+     use the parameters of the last frame which is deleted
+;; |Run ‘getter’ in ‘server-*-make-*-hook’:   |<-------------------------------------------+
+;; |‘getter’ itself is removed from the hook; |     when Emacs runs ‘server-*-make-*-hook’.|
+;; |‘setter’ is in ‘delete-*-functions’.      |                                            |
+;; +------------------------------------------+                                            |
+;;  Let’s _make_ more frames.                                                              |
+;;  Either ‘getter’ or ‘setter’ won’t run.                                                 |
+;;           |                                                                             |
+;;           | Let’s _delete_ one frame.                          No frame on desktop now. | Let’s _make_ one.
+;;           V                                                                             |
+;; +-------------------------------------+                             +-------------------+-----------------+
+;; |Run ‘setter’ in ‘delete-*-functions’:| Let’s _delete_ the last one |Run ‘setter’ in ‘delete-*-functions’:|
+;; |nothing will happend because the     +---------------------------->|frame parameters will be stored;     |
+;; |frame to be deleted is not the only  |     frame on the desktop.   |now ‘stored?’ => t; ‘setter’ itself  |
+;; |one frame on the desktop.            |                             |is removed from the hook; ‘getter’ is|
+;; ++------------------------------------+                             |in ‘server-*-make-*-hook’            |
+;;  |                                   ^                              +-------------------------------------+
+;;  |Let’s _delete_ frames until there’s|
+;;  +-----------------------------------+
+;;   only one frame left on the desktop.
 
 
 (provide 'acs-ui)

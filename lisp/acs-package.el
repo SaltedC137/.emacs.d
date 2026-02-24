@@ -71,6 +71,7 @@
 ;; (package-autoremove)  
 )
 
+(require 'acs-elpa)
 (provide 'acs-package)
 
 ;; Local Variables:
