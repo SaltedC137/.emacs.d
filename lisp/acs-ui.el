@@ -86,7 +86,7 @@
              `(,(pcase system-type
                   ("TODO: Dunno how to test whether the platform supports this parameter." 'alpha-background)
                   (_ 'alpha))
-               . 90))
+               . 75))
 
 
 ;; +-----------------------------------------+
@@ -116,6 +116,41 @@
 ;;  |Let’s _delete_ frames until there’s|
 ;;  +-----------------------------------+
 ;;   only one frame left on the desktop.
+
+
+( add-hook 'server-after-make-frame-hook
+        (let ((acs/ui:frame-size&position `(
+        ,(cons 'top 0) 
+        ,(cons 'left 0) 
+        ,(cons 'width 0) 
+        ,(cons 'height 0)
+        ;; ‘fullscreen’放最后, 以覆盖‘width’&‘height’.
+        ,(cons 'fullscreen nil)))
+            acs/ui:frame-size&position-stored?)
+        (letrec ((acs/ui:frame-size&position-getter (lambda ()
+                (when acs/ui:frame-size&position-stored?
+                    (dolist (parameter-value acs/ui:frame-size&position)
+                    (set-frame-parameter nil (car parameter-value) (cdr parameter-value))))
+                (remove-hook 'server-after-make-frame-hook acs/ui:frame-size&position-getter)
+                    ( add-hook 'delete-frame-functions       acs/ui:frame-size&position-setter)))
+            (acs/ui:frame-size&position-setter (lambda (frame-to-be-deleted)
+                (when (length= (frames-on-display-list) 1)
+                ;; MS-Windows 上的 “最小化窗口” 似乎就只是把窗口挪到屏幕之外, 所以得先把它挪回来.
+                (make-frame-visible frame-to-be-deleted)
+                (dolist (parameter-value acs/ui:frame-size&position)
+                    (setcdr parameter-value (frame-parameter frame-to-be-deleted (car parameter-value))))
+                (setq acs/ui:frame-size&position-stored? t)
+                (remove-hook 'delete-frame-functions       acs/ui:frame-size&position-setter)
+                ;; 当需要调用该 lambda 表达式时, 必然没有除此以外的其它frame了,
+                ;; 因此之后新建的 frame 必然是 server 弹出的, 所以此处无需使用‘after-make-frame-functions’.
+                ( add-hook 'server-after-make-frame-hook acs/ui:frame-size&position-getter)))))
+    acs/ui:frame-size&position-getter)))
+
+;; 分割线
+(setopt window-divider-default-places      'right-only  
+    window-divider-default-right-width 12)
+(window-divider-mode)
+
 
 
 (provide 'acs-ui)
