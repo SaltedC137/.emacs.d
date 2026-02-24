@@ -22,6 +22,12 @@
                         ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
                         ))
 
+(setopt package-archive-priorities '(;; “Gnu” 应该和 “melpa” 同优先级, 从而默认选取二者中较新的 package.
+                                    ("gnu"    . 1)
+                                    ("nongnu" . 0)
+                                    ("melpa"  . 1))
+    package-menu-hide-low-priority t)
+
 (provide 'acs-package)
 
 ;; Local Variables:
