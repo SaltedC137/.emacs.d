@@ -211,6 +211,86 @@
 (keymap-global-unset "<menu-bar> <help-menu> <getting-new-versions>")
 (keymap-global-unset "<menu-bar> <help-menu> <more-manuals> <order-emacs-manuals>")
 
+;;; Tool Bar:
+
+(setq tool-bar-style 'both)
+(tool-bar-mode -1)
+
+;;; Tab Bar:
+
+(with-eval-after-load 'tab-bar
+    (setq tab-prefix-map nil))
+
+;;; Tab Line:
+
+(setq tab-line-close-button-show nil
+    tab-line-new-button-show nil
+    ;; 关闭 tab-line-name 之间默认的空格.
+    tab-line-separator "")
+;; Tab line 就是为了方便使用鼠标而存在的, 直接用鼠标点就行了.
+(setopt tab-line-switch-cycling nil)
+(setq-default tab-line-format `(:eval (mapcar ',(prog1 (lambda (buffer-tab-line-name)
+                                                        (concat (let ((-buffer-icon (when (get-buffer buffer-tab-line-name)
+                                                                                    (with-current-buffer buffer-tab-line-name
+                                                                                        (all-the-icons-icon-for-buffer)))))
+                                                                (if (stringp -buffer-icon)
+                                                                    -buffer-icon
+                                                                    ""))
+                                                                buffer-tab-line-name))
+                                                (require 'all-the-icons))
+                                            (tab-line-format))))
+
+(global-tab-line-mode)
+
+;;; Window:
+
+(setopt window-resize-pixelwise t)
+
+(setopt window-min-height 4
+        window-min-width  1)
+
+;; 不需要高亮_当前行_, 因为_当前行号_是高亮的.
+(global-hl-line-mode -1)
+
+;;; Text Area:
+
+;; 除了当前选中的 window, 还 高亮 non-selected window 的 active region.
+(setopt highlight-nonselected-windows t)
+
+;; 渲染成对的单引号时, 尽可能使用 ‘curve’ 这种样式, 退而求此次地可以使用 `grave' 这种样式.
+(setopt text-quoting-style nil)
+
+;;; Fringe:
+
+(set-fringe-mode '(0 . nil))  ; Right-only.
+
+(setopt display-line-numbers-type t  ; 启用绝对行号.
+        ;; 开启 relative/visual 行号时, 当前行仍然显示 absolute 行号.
+        display-line-numbers-current-absolute t)
+(setopt display-line-numbers-widen t  ; 无视 narrowing, 行号从 buffer 的起始点计算.
+        ;; 动态改变为行号预留的列数.
+        display-line-numbers-width nil
+        ;; 行号占用的列数可以动态减少.
+        display-line-numbers-grow-only nil)
+(setopt line-number-display-limit nil  ; 当 buffer 的 size 太大时是否启用行号, 以节约性能.
+        ;; 单行太长也会消耗性能用于计算行号, 因此,
+        ;; 如果当前行附近的行的平均宽度大于该值, 则不计算行号.
+        line-number-display-limit-width most-positive-fixnum)
+;; 每 10 行就用 ‘line-number-major-tick’ 高亮一次行号.
+(setopt display-line-numbers-major-tick 10)
+(global-display-line-numbers-mode)
+
+;; 若开启, buffer 尾行之后的区域的右流苏区域会显示密集的刻度线.
+(setopt indicate-empty-lines nil)
+(setopt overflow-newline-into-fringe t)
+
+;; 启用 word-wrap 时在换行处显示 down-arrow.
+(setopt visual-line-fringe-indicators '(nil down-arrow))
+
+;; 控制是否在 fringe 所在的区域上显示首尾指示符 (window 的四个边角区域).
+(setopt indicate-buffer-boundaries nil)
+
+
 (provide 'acs-ui)
 
 ;; Local Variables:
