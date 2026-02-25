@@ -262,7 +262,7 @@
 
 ;;; Fringe:
 
-(set-fringe-mode '(0 . nil))  ; Right-only.
+(set-fringe-mode '(8 . nil))  ; Right-only.
 
 (setopt display-line-numbers-type t  ; 启用绝对行号.
         ;; 开启 relative/visual 行号时, 当前行仍然显示 absolute 行号.
@@ -278,7 +278,7 @@
         line-number-display-limit-width most-positive-fixnum)
 ;; 每 10 行就用 ‘line-number-major-tick’ 高亮一次行号.
 (setopt display-line-numbers-major-tick 10)
-(global-display-line-numbers-mode)
+(global-display-line-numbers-mode t)
 
 ;; 若开启, buffer 尾行之后的区域的右流苏区域会显示密集的刻度线.
 (setopt indicate-empty-lines nil)
@@ -289,6 +289,9 @@
 
 ;; 控制是否在 fringe 所在的区域上显示首尾指示符 (window 的四个边角区域).
 (setopt indicate-buffer-boundaries nil)
+
+
+
 
 
 (provide 'acs-ui)
