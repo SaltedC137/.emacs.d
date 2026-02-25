@@ -375,7 +375,14 @@
         which-func-unknown "?")
 (which-function-mode)  ; 依赖 ‘imenu’ 提供的数据, 在 modeline 上显示当前 defun 名.
 
+;;; Display Battery Mode
+(setopt battery-mode-line-format "[%p%%] ")
+(setopt battery-update-interval 300)  ; 秒钟.
+(display-battery-mode)
 
+(setopt keycast-mode-line-format "%k%c%r "
+        keycast-mode-line-insert-after (cl-first mode-line-format)
+        keycast-mode-line-remove-tail-elements nil)
 
 (provide 'acs-ui)
 
