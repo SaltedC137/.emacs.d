@@ -332,7 +332,13 @@
         doom-modeline-column-zero-based nil)
 (column-number-mode)
 
+;;; End of Line
+(setopt eol-mnemonic-unix " LF "
+        eol-mnemonic-mac  " CR "
+        eol-mnemonic-dos  " CRLF "
+        eol-mnemonic-undecided " ?EOL ")
 
+(setopt mode-line-process t)  ; E.g., ‘Shell :run’.
 
 (provide 'acs-ui)
 
