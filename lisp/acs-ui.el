@@ -4,6 +4,8 @@
 '(overline-margin 0 nil () "上划线的高度+宽度")
 '(mouse-highlight t nil () "当鼠标位于clickable位置时,高亮此处的文本")
 
+(require 'acs-themes)
+
 (add-hook 'emacs-startup-hook  ; 在调用 ‘frame-notice-user-settings’ 前运行.
         (lambda ()
         ;; 摘编自 Centaur Emacs, 用于解决 字体 问题.

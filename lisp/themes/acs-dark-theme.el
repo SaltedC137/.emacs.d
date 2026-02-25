@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 
-(deftheme acs-light
+(deftheme acs-dark
     "light theme"
     :family 'acs
     :background-mode 'dark
