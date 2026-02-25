@@ -262,7 +262,7 @@
 
 ;;; Fringe:
 
-(set-fringe-mode '(8 . nil))  ; Right-only.
+(set-fringe-mode '(0 . nil))  ; Right-only.
 
 (setopt display-line-numbers-type t  ; 启用绝对行号.
         ;; 开启 relative/visual 行号时, 当前行仍然显示 absolute 行号.
