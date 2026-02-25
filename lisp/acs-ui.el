@@ -86,7 +86,7 @@
              `(,(pcase system-type
                   ("TODO: Dunno how to test whether the platform supports this parameter." 'alpha-background)
                   (_ 'alpha))
-               . 75))
+               . 87))
 
 
 ;; +-----------------------------------------+
