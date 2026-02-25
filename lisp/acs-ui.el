@@ -290,6 +290,21 @@
 ;; 控制是否在 fringe 所在的区域上显示首尾指示符 (window 的四个边角区域).
 (setopt indicate-buffer-boundaries nil)
 
+;;; Scroll Bar:
+(setopt scroll-bar-mode 'right)
+
+;; 滚动条落至底部 (overscrolling) 时的行为.
+(setopt scroll-bar-adjust-thumb-portion nil)
+
+(setq-default scroll-bar-width 28)
+
+;;; Mode Line:
+
+
+
+
+
+
 
 
 
