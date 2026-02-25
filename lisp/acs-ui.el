@@ -153,9 +153,43 @@
 
 ;; Frame Title 
 
+(defvar acs/emacs:rss-string "0.0MB"
+  "缓存的 Emacs 物理内存占用字符串，供 frame-title 读取。")
+
+(defun acs/emacs:update-rss ()
+        "后台静默获取 Emacs 内存占用，避免在 frame-title 中直接调用导致界面卡顿或崩溃。"
+        (let* ((attrs (process-attributes (emacs-pid)))
+                (rss (alist-get 'rss attrs)))
+        (when rss
+        (setq acs/emacs:rss-string
+                (cl-loop for mem = (/ rss 1024.0) then (/ mem 1024.0)
+                        for unit across "KMGTPEZ"
+                        when (< mem 1024) 
+                        return (format "%.1f%ciB" mem unit))))))
 
 
+(run-with-timer 0 5 #'acs/emacs:update-rss)
 
+(setq frame-title-format
+        '(""
+                default-directory "\t"
+                "🧹x" (:eval (number-to-string gcs-done))
+                "~" (:eval (number-to-string (round gc-elapsed))) "s "
+                ;; 直接读取定时器缓存的字符串，不仅安全，还能极大提升 Emacs 性能
+                "💾" (:eval acs/emacs:rss-string)
+                "⏱️" (:eval (emacs-uptime "%h:%.2m")) " "
+                ;; 键盘输入事件统计
+                (nil ("" "🎹" 
+                (:eval (number-to-string num-input-keys)) "/" 
+                (:eval (number-to-string num-nonmacro-input-events))))))
+
+(setq icon-title-format
+        '((:eval
+                (mapconcat (lambda (buf)
+                        (format "[%.5s]" (buffer-name buf)))
+                        ;; 安全提取：使用 window-buffer 直接获取 buffer 对象，绝对不能用 with-selected-window！
+                        (delete-dups (mapcar #'window-buffer (window-list)))
+                        " "))))
 
 ;;; Menu Bar:
 
@@ -383,6 +417,12 @@
 (setopt keycast-mode-line-format "%k%c%r "
         keycast-mode-line-insert-after (cl-first mode-line-format)
         keycast-mode-line-remove-tail-elements nil)
+
+
+
+
+
+
 
 (provide 'acs-ui)
 
