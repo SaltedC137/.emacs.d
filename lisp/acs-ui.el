@@ -310,12 +310,12 @@
         doom-modeline-minor-modes nil)
 (setopt doom-modeline-bar-width 3  ; 左侧 小竖条 (装饰品) 的 宽度.
         ;; 尽可能地窄.
-        doom-modeline-height 1
+        doom-modeline-height 30
         ;; 即使当前窗口宽度很小, 也尽量显示所有信息.
         doom-modeline-window-width-limit nil)
 (doom-modeline-mode)
 
-(setopt mode-line-percent-position t
+(setopt mode-line-percent-position nil
         doom-modeline-percent-position mode-line-percent-position)
 
 (size-indication-mode)  ; 在 mode line 上显示 buffer 大小.
@@ -339,6 +339,43 @@
         eol-mnemonic-undecided " ?EOL ")
 
 (setopt mode-line-process t)  ; E.g., ‘Shell :run’.
+
+;;; Display Time Mode
+
+(require 'time)
+(setopt display-time-format "%a%b%d%p%I:%M"
+        display-time-day-and-date "若‘display-time-format’是 nil 则使用默认的日期显示方式"
+        display-time-24hr-format nil)
+(setq display-time-mail-icon (find-image '(
+                                           (:type xpm :file "letter.xpm" :ascent center)
+                                           (:type pbm :file "letter.pbm" :ascent center)
+                                           ))
+      ;; 使用由 ‘display-time-mail-icon’ 指定的 icon, 如果确实找到了这样的 icon 的话;
+      ;; 否则 使用 Unicode 图标.
+      display-time-use-mail-icon display-time-mail-icon
+
+      ;; 是否检查以及如何检查邮箱, 采用默认策略 (i.e., 系统决定).
+      display-time-mail-file nil
+      ;; 该目录下的所有非空文件都被当成新送达的邮件.
+      display-time-mail-directory nil)
+(setopt display-time-default-load-average 0  ; 显示过去 1min 的平均 CPU 荷载.
+        ;; 当 CPU 荷载 >= 0 时, 显示 CPU 荷载.
+        display-time-load-average-threshold 0)
+(setopt display-time-interval 60)
+(display-time-mode)
+(advice-add 'display-time-next-load-average :before-until ; 使可点击文本 (CPU 负荷) 不作出应答.
+            (lambda ()
+              (and (called-interactively-p 'any)
+                   (when (listp last-command-event)
+                     (eq (car last-command-event) 'mouse-2)))))
+
+(setopt which-func-maxout most-positive-fixnum
+        which-func-modes t  ; 服务任何 mode.
+        ;; 不知道当前函数是什么时的显示词.
+        which-func-unknown "?")
+(which-function-mode)  ; 依赖 ‘imenu’ 提供的数据, 在 modeline 上显示当前 defun 名.
+
+
 
 (provide 'acs-ui)
 
