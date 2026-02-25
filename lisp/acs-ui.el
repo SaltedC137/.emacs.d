@@ -418,9 +418,47 @@
         keycast-mode-line-insert-after (cl-first mode-line-format)
         keycast-mode-line-remove-tail-elements nil)
 
+;;; Minibuffer & Echo Area:
 
+(setopt max-mini-window-height 0.3)
 
+;; 由 输入 的 字符串 的 行数 决定如何 resize.
+(setopt resize-mini-windows t)
 
+;; Trim 首尾的空行.
+(setopt resize-mini-frames #'fit-frame-to-buffer)
+
+;;; Mouse:
+
+(setq mouse-fine-grained-tracking nil)
+
+(setopt display-hourglass t  ; When Emacs is busy, 将鼠标指针显示为 漏斗.
+        ;; When Emacs is busy, 立刻将鼠标指针显示为漏斗.
+        hourglass-delay 0)
+
+;; 输入文本时不需要隐藏鼠标指针, 因为可以使用 ‘mouse-avoidance-mode’.
+(setopt make-pointer-invisible nil)
+(setopt mouse-avoidance-animation-delay 0.05)
+(setopt mouse-avoidance-threshold  2  ; >=2
+        mouse-avoidance-nudge-var  1  ; >=1
+        mouse-avoidance-nudge-dist 2)
+(mouse-avoidance-mode 'animate)
+
+;;; Cursor:
+(setopt cursor-type 'box
+        cursor-in-non-selected-windows t)
+
+(blink-cursor-mode -1)
+(setopt blink-cursor-delay  1  ; Cursor 静止一段时间之后开始闪烁.
+        blink-cursor-blinks 10  ; 闪烁次数.
+        blink-cursor-interval 0.5
+        ;; 映射: ‘cursor-type’ -> 光标黯淡时的造型.
+        blink-cursor-alist '((box  . nil)
+                             (bar  . box)
+                             (hbar . bar)))
+
+;; TUI 下, 尽可能地 使 cursor 外形或特征 更加显著.
+(setopt visible-cursor t)
 
 
 
