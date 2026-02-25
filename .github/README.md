@@ -1,4 +1,4 @@
-# ACS Emacs Configuration
+# ACS Emacs Configuration learn from shynur
 
 ## 🚀 Quick Start
 
