@@ -50,7 +50,7 @@
                     :weight black))))
             '(window-divider
             ((t . (:foreground "SlateBlue4"))))
-            ;; ;; 我把 ‘indent-guide’ 删了.
+            ;; ‘indent-guide’ 删了.
             ;; (setq indent-guide-recursive t
             ;;       indent-guide-char "\N{BOX DRAWINGS LIGHT VERTICAL}")
             '(indent-guide-face
@@ -225,18 +225,18 @@
     tab-line-new-button-show nil
     ;; 关闭 tab-line-name 之间默认的空格.
     tab-line-separator "")
-;; Tab line 就是为了方便使用鼠标而存在的, 直接用鼠标点就行了.
+;; Tab line 
 (setopt tab-line-switch-cycling nil)
 (setq-default tab-line-format `(:eval (mapcar ',(prog1 (lambda (buffer-tab-line-name)
-                                                        (concat (let ((-buffer-icon (when (get-buffer buffer-tab-line-name)
-                                                                                    (with-current-buffer buffer-tab-line-name
-                                                                                        (all-the-icons-icon-for-buffer)))))
-                                                                (if (stringp -buffer-icon)
-                                                                    -buffer-icon
-                                                                    ""))
-                                                                buffer-tab-line-name))
-                                                (require 'all-the-icons))
-                                            (tab-line-format))))
+                                                (concat (let ((-buffer-icon (when (get-buffer buffer-tab-line-name)
+                                                                                (with-current-buffer buffer-tab-line-name
+                                                                                (all-the-icons-icon-for-buffer)))))
+                                                        (if (stringp -buffer-icon)
+                                                                -buffer-icon
+                                                                ""))
+                                                        buffer-tab-line-name))
+                                        (require 'all-the-icons))
+                                        (tab-line-format))))
 
 (global-tab-line-mode)
 
@@ -308,7 +308,7 @@
         doom-modeline-minor-modes nil)
 (setopt doom-modeline-bar-width 3  ; 左侧 小竖条 (装饰品) 的 宽度.
         ;; 尽可能地窄.
-        doom-modeline-height 30
+        doom-modeline-height 32
         ;; 即使当前窗口宽度很小, 也尽量显示所有信息.
         doom-modeline-window-width-limit nil)
 (doom-modeline-mode)
