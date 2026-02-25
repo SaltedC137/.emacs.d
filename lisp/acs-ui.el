@@ -298,14 +298,39 @@
 
 (setq-default scroll-bar-width 28)
 
+
 ;;; Mode Line:
 
+;; Face ‘mode-line-inactive’ for non-selected window’s mode line.
+(setopt mode-line-in-non-selected-windows t)
+(setopt mode-line-compact nil)  ; 不要设 t, 否则即使有多余的空间, 它也倾向于挤在一起.
+(setopt mode-line-right-align-edge 'window)  ; 与 window 的边缘对齐.
 
+(setopt doom-modeline-display-misc-in-all-mode-lines t  ; 没看出有什么区别, 先设 t, 继续观察...
+        doom-modeline-minor-modes nil)
+(setopt doom-modeline-bar-width 3  ; 左侧 小竖条 (装饰品) 的 宽度.
+        ;; 尽可能地窄.
+        doom-modeline-height 1
+        ;; 即使当前窗口宽度很小, 也尽量显示所有信息.
+        doom-modeline-window-width-limit nil)
+(doom-modeline-mode)
 
+(setopt mode-line-percent-position t
+        doom-modeline-percent-position mode-line-percent-position)
 
+(size-indication-mode)  ; 在 mode line 上显示 buffer 大小.
+(setq mode-line-column-line-number-mode-map ())  ; 使某些可点击文本不作出应答.
 
+;; 当 buffer 对应的文件名相同时, 在 buffer 名字之前补全文件的路径, 使 buffer 的名字互异.
+(setopt uniquify-buffer-name-style 'forward
+        ;; 当‘uniquify-buffer-name-style’的设置涉及补全文件路径时, 保留显示路径名之间相同的部分.
+        uniquify-strip-common-suffix t)
 
-
+(line-number-mode -1)  ; Mode line 上不要显示行号, 因为 window 左边缘已经显示行号了.
+;; 从 1 开始计数.
+(setopt mode-line-position-column-format '("C%C")
+        doom-modeline-column-zero-based nil)
+(column-number-mode)
 
 
 
