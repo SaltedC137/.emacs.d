@@ -1,4 +1,4 @@
-3367
+25721
 27
 Emacs 快速指南.（查看版权声明请至本文末尾）
 
@@ -1072,7 +1072,7 @@ using, writing, and sharing free software!
    售性或特定目的适用性所为的默示性担保。详情请参照GNU通用公共授权。
 
    您应已收到附随于 GNU Emacs 的GNU通用公共授权的副本；如果没有，请参照
-   <https://www.gnu.org/licenses/>.
+    <https://www.gnu.org/licenses/>.
 
 敬请阅读文件“COPYING”，然后向你的朋友们分发 GNU Emacs 拷贝。让我们以使
 用、编写和分享自由软件的实际行动来共同祛除软件障碍主义（所谓的“所有

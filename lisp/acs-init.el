@@ -82,7 +82,7 @@
 ;; (require 'acs-server)   ; (find-file-other-window "./acs-server.el")
 ;; (require 'acs-cc)       ; (find-file-other-window "./acs-cc.el")
 ;; (require 'acs-kbd)      ; (find-file-other-window "./acs-kbd.el")
-;; (require 'acs-sh)       ; (find-file-other-window "./acs-sh.el")
+(require 'acs-sh)       ; (find-file-other-window "./acs-sh.el")
 ;; (require 'acs-yas)      ; (find-file-other-window "./acs-yas.el")
 ;; (require 'acs-profile)  ; (find-file-other-window "./acs-profile.el")
 ;; (require 'acs-startup)  ; (find-file-other-window "./acs-startup.el")
@@ -90,3 +90,7 @@
 ;; (require 'acs-lib)      ; (find-file-other-window "./acs-lib.el")
 
 (provide 'acs-init)
+
+;; Local Variables:
+;; coding: utf-8-unix
+;; End:
