@@ -24,7 +24,7 @@ pwsh.exe
 
 (add-hook 'shell-mode-hook
         (lambda ()
-        "‘eshell’中‘company-mode’卡得一批."
+        "‘shell’中‘company-mode’卡得一批."
         (company-mode -1)))
 
 
