@@ -87,6 +87,59 @@
     'saved-value `(,(setq inhibit-startup-echo-area-message user-login-name)))
 
 
+(add-hook 'post-command-hook
+    (letrec ((acs/startup:indicator (lambda ()
+        (remove-hook 'post-command-hook acs/startup:indicator)
+        (let ((emacs-init-time (time-to-seconds (time-since before-init-time))))
+        (message #("acs: 启动耗时 %.2fs"
+                    10 15 (face bold))
+                emacs-init-time)
+        (when (daemonp)
+            ;; 发出通知: Emacs 后台进程启动了.
+            (let ((acs/startup:balloon-title "Emacs Daemon Launched")
+                (acs/startup:balloon-body (format "Emacs 已经在后台启动了\n耗时 %.2f 秒"
+                                                    emacs-init-time)))
+            (pcase system-type
+                ('windows-nt
+                (advice-add 'w32-notification-notify :before
+            (let* ((acs/startup:balloon-emitting-frame (let (before-make-frame-hook
+                        window-system-default-frame-alist initial-frame-alist default-frame-alist
+                        after-make-frame-functions server-after-make-frame-hook)
+                    (make-frame-on-display (symbol-name initial-window-system)
+                                            '((visibility . nil)))))
+                    (acs/startup:balloon (with-selected-frame acs/startup:balloon-emitting-frame
+                        (w32-notification-notify
+                        :level 'info
+                        :title acs/startup:balloon-title
+                        :body acs/startup:balloon-body)))
+                    (acs/startup:balloon-lock (make-mutex))
+                    (acs/startup:message-closer (lambda ()
+                            "关闭 ‘acs/startup:balloon’ 后, 顺便将其设为字符串 “closed”."
+                            (with-selected-frame acs/startup:balloon-emitting-frame
+                            (w32-notification-close acs/startup:balloon)
+                            (setq acs/startup:balloon "closed")
+                            (let (delete-frame-functions
+                                    after-delete-frame-functions)
+                                (delete-frame))))))
+                (run-with-idle-timer 10 nil
+                                        (lambda ()
+                                        (with-mutex acs/startup:balloon-lock
+                                            (unless (stringp acs/startup:balloon)
+                                            (funcall acs/startup:message-closer)))))
+                (lambda (&rest _)
+                    (advice-remove 'w32-notification-notify "acs/startup:message-closer")
+                    (with-mutex acs/startup:balloon-lock
+                    (unless (stringp acs/startup:balloon)
+                        (funcall acs/startup:message-closer))))) '((name . "acs/startup:message-closer"))))
+                    (_
+                (require 'notifications)
+                (notifications-notify
+                :title acs/startup:balloon-title
+                :body acs/startup:balloon-body
+                :transient t)))))))))
+        acs/startup:indicator)
+    100)
+
 
 
 (provide 'acs-start)
