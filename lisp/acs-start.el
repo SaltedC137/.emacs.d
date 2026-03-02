@@ -3,19 +3,15 @@
 (require 'ansi-color)
 
 (defun my-centered-scratch-art (file-path)
-  "读取文件，解析 ANSI 颜色，并根据窗口宽度居中 ASCII"
+  "读取文件，解析 ANSI 颜色，并根据窗口宽度居中 ASCII 艺术。"
     (with-temp-buffer
         (insert-file-contents file-path)
-
         (goto-char (point-min))
         (while (search-forward "\\e" nil t)
         (replace-match "\033"))
-        
         (let* ((colored-text (ansi-color-apply (buffer-string)))
             (lines (split-string colored-text "\n"))
-
-            (max-visible-width (apply #'max (mapcar #'string-width lines)))
-            
+            (max-visible-width (apply #'max (mapcar #'length lines)))                                              
             (win-width (window-width))
             (pad-len (max 0 (/ (- win-width max-visible-width) 2)))
             (padding-string (make-string pad-len ?\s)))
@@ -24,28 +20,24 @@
                     (concat padding-string line))
                     lines
                     "\n"))))
-
 (setopt initial-scratch-message "")
 
+;; 并非有用
 (defun acs/draw-scratch-art ()
-    "在窗口真正渲染后，清空默认注释并在 scratch 绘制居中图像。"
-    (let* ((win (get-buffer-window "*scratch*"))
-            (target-width (if win (window-width win) (frame-width))))
-    (with-current-buffer (get-buffer-create "*scratch*")
-    (when (or (= (buffer-size) 0)     
-                (string-prefix-p ";;" (buffer-substring-no-properties (point-min) (min (point-max) 3))))
-        (let ((inhibit-read-only t))
-            (erase-buffer)
-            (insert (my-centered-scratch-art (expand-file-name "lisp/asset/AAyAUO_20240525150911.txt" user-emacs-directory) target-width))
-            (goto-char (point-min)))))))
+"在当前窗口真正渲染后，在 scratch 绘制居中图像。"
+(let ((win (get-buffer-window "*scratch*")))
+    (when win
+    (with-selected-window win
+        (with-current-buffer "*scratch*"
+        (when (= (buffer-size) 0)
+            (insert (my-centered-scratch-art (expand-file-name "lisp/asset/AAyAUO_20240525150911.txt" user-emacs-directory)))
+            (goto-char (point-min))))))))
 
-(add-hook 'emacs-startup-hook
-        (lambda ()
-            (run-with-timer 0.2 nil #'acs/draw-scratch-art)))
+(add-hook 'window-setup-hook #'acs/draw-scratch-art)
 
 (add-hook 'server-after-make-frame-hook
         (lambda ()
-            (run-with-timer 0.2 nil #'acs/draw-scratch-art)))
+            (run-with-timer 0.1 nil #'acs/draw-scratch-art)))
 
 (setopt initial-major-mode 'lisp-interaction-mode)
 
