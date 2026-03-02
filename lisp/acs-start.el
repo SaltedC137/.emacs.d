@@ -134,16 +134,15 @@
                     (_
                 (require 'notifications)
                 (notifications-notify
-                :title acs/startup:balloon-title
-                :body acs/startup:balloon-body
-                :transient t)))))))))
+                    :title acs/startup:balloon-title
+                    :body acs/startup:balloon-body
+                    :transient t)))))))))
         acs/startup:indicator)
     100)
-
 
 
 (provide 'acs-start)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; End:
