@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t; -*-
 
+(add-to-list 'load-path "./site-lisp/lsp-bridge")
+
+
+
 
 
 (provide 'acs-plugin)
