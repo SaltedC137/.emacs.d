@@ -39,11 +39,10 @@
                                     sly
                                     embark
                                     swiper
-                                    company
                                     helpful
                                     htmlize
                                     keycast
-                                    neotree
+                                    dirvish
                                     git-modes
                                     on-screen
                                     yaml-mode

@@ -90,7 +90,11 @@
 (require 'acs-start)  ; (find-file-other-window "./acs-startup.el")
 (require 'acs-ui)       ; (find-file-other-window "./acs-ui.el")
 ;; (require 'acs-lib)      ; (find-file-other-window "./acs-lib.el")
-(require 'acs-plugin)
+(require 'acs-plugin)     ; (find-file-other-window "./acs-plugin.el")
+(require 'acs-keyboard)   ; (find-file-other-window "./acs-keyboard.el")
+
+
+
 (provide 'acs-init)
 
 ;; Local Variables:
