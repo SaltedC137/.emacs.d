@@ -52,7 +52,6 @@
                                     marginalia
                                     powershell
                                     ascii-table
-                                    xterm-color
                                     textile-mode
                                     rainbow-mode
                                     all-the-icons
