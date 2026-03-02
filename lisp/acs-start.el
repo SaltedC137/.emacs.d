@@ -2,10 +2,32 @@
 
 (require 'ansi-color)
 
-(setopt initial-scratch-message
-        (with-temp-buffer
-            (insert-file-contents (expand-file-name "lisp/asset/AAyAUO_20240525150911.txt" user-emacs-directory))
-            (ansi-color-apply (buffer-string))))
+(defun my-centered-scratch-art (file-path)
+  "读取文件，解析 ANSI 颜色，并根据窗口宽度居中 ASCII 艺术。"
+    (with-temp-buffer
+        (insert-file-contents file-path)
+
+        (goto-char (point-min))
+        (while (search-forward "\\e" nil t)
+        (replace-match "\033"))
+        
+
+        (let* ((colored-text (ansi-color-apply (buffer-string)))
+            (lines (split-string colored-text "\n"))
+
+            (max-visible-width (apply #'max (mapcar #'length lines)))
+                                                
+            (win-width (window-width))
+            (pad-len (max 0 (/ (- win-width max-visible-width) 2)))
+            (padding-string (make-string pad-len ?\s)))
+            
+        (mapconcat (lambda (line)
+                    (concat padding-string line))
+                    lines
+                    "\n"))))
+
+(setopt initial-scratch-message 
+        (my-centered-scratch-art (expand-file-name "lisp/asset/AAyAUO_20240525150911.txt" user-emacs-directory)))
 
 (setopt initial-major-mode 'lisp-interaction-mode)
 

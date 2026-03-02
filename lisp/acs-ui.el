@@ -64,10 +64,10 @@
                     :foreground "yellow")))))))
 
 
-(add-to-list 'default-frame-alist '(left  . 301))
-(add-to-list 'default-frame-alist '(width . 66))
-(add-to-list 'default-frame-alist '(top    . 121))
-(add-to-list 'default-frame-alist '(height . 26))
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'initial-frame-alist '(z-group . above))
+(add-to-list 'default-frame-alist '(z-group . above))
 
 (keymap-global-set "C-c z"
                 (lambda ()
@@ -125,7 +125,8 @@
         ,(cons 'width 0) 
         ,(cons 'height 0)
         ;; ‘fullscreen’放最后, 以覆盖‘width’&‘height’.
-        ,(cons 'fullscreen nil)))
+        ,(cons 'z-group 'above)
+        ,(cons 'fullscreen 'maximized)))
             acs/ui:frame-size&position-stored?)
         (letrec ((acs/ui:frame-size&position-getter (lambda ()
                 (when acs/ui:frame-size&position-stored?
@@ -468,7 +469,6 @@
 
 
 ;;
-
 
 (provide 'acs-ui)
 
