@@ -6,7 +6,6 @@
 
 ![Emacs Version](https://img.shields.io/badge/Emacs-28.0+-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2011-lightgrey.svg)
-![License](https://img.shields.io/badge/License-GPL%203.0-orange.svg)
 
 ---
 
