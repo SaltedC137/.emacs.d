@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 
-(setq gc-cons-threshold (* 50 1024 1024))
+(setq gc-cons-threshold (* 100 1024 1024))
 
 (defun acs/message-format (format-string)
   "在开头加上 \"acs: \" 前缀。"
@@ -91,7 +91,7 @@
 (require 'acs-ui)       ; (find-file-other-window "./acs-ui.el")
 ;; (require 'acs-lib)      ; (find-file-other-window "./acs-lib.el")
 (require 'acs-plugin)     ; (find-file-other-window "./acs-plugin.el")
-(require 'acs-keyboard)   ; (find-file-other-window "./acs-keyboard.el")
+(require 'acs-key)   ; (find-file-other-window "./acs-keyboard.el")
 
 
 

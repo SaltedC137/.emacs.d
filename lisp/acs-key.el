@@ -3,7 +3,7 @@
 
 
 
-(provide 'acs-keyboard)
+(provide 'acs-key)
 
 ;; Local Variables:
 ;; coding: utf-8-unix
