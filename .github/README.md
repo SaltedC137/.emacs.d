@@ -415,13 +415,6 @@ Currently provides `acs-light-theme` and `acs-dark-theme`.
 | ⚡ | Further optimized startup performance |
 | 🐛 | Fixed Chinese filename encoding issues |
 
----
-
-## 📄 License
-
-This configuration is released under the **GPL-3.0** License.
-
----
 
 ## 🤝 Contributing
 
