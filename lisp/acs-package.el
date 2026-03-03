@@ -49,7 +49,6 @@
                                     yasnippet
                                     drag-stuff
                                     marginalia
-                                    powershell
                                     ascii-table
                                     textile-mode
                                     rainbow-mode
