@@ -56,7 +56,6 @@
                                     doom-modeline
                                     markdown-mode
                                     page-break-lines
-                                    company-quickhelp
                                     rainbow-delimiters
                                     highlight-parentheses
                                     )
