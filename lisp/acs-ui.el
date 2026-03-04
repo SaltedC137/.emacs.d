@@ -66,8 +66,8 @@
 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-to-list 'initial-frame-alist '(z-group . above))
-(add-to-list 'default-frame-alist '(z-group . above))
+;; (add-to-list 'initial-frame-alist '(z-group . above))
+;; (add-to-list 'default-frame-alist '(z-group . above))
 
 (keymap-global-set "C-c z"
                 (lambda ()
@@ -234,7 +234,6 @@
                                                         buffer-tab-line-name))
                                         (require 'all-the-icons))
                                         (tab-line-format))))
-
 (global-tab-line-mode)
 
 ;;; Window:

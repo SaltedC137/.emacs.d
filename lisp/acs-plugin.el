@@ -14,9 +14,6 @@
 
 (provide 'acs-plugin)
 
-
-
-
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:

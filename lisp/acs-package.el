@@ -47,6 +47,7 @@
                                     on-screen
                                     yaml-mode
                                     yasnippet
+				    move-text
                                     drag-stuff
                                     marginalia
                                     ascii-table
