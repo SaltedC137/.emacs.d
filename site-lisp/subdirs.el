@@ -4,5 +4,5 @@
     (normal-top-level-add-subdirs-to-load-path))
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; End:

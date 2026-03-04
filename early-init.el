@@ -5,7 +5,7 @@
 (add-hook 'window-setup-hook
         (let ((acs--performance-impactful-variables 
             (list
-            (vector 'gc-cons-threshold            most-positive-fixnum 'acs--expected-value)
+            (vector 'gc-cons-threshold            most-positive-fixnum    (* 300 1024 1024))
             (vector 'gc-cons-percentage           1.0                  'acs--expected-value)
             (vector 'frame-inhibit-implied-resize t                    'acs--expected-value)
             (vector 'file-name-handler-alist      nil                  'acs--expected-value)
@@ -33,5 +33,5 @@
 (require 'acs-early-init)  ; (find-file-other-window "./lisp/acs-early-init.el")
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; End:

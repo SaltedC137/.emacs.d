@@ -19,5 +19,5 @@
 (provide 'acs-sh)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; End:

@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
 
-(setq gc-cons-threshold (* 500 1024 1024))
-
 (defun acs/message-format (format-string)
   "在开头加上 \"acs: \" 前缀。"
   (declare (pure t)
@@ -99,5 +97,5 @@
 (provide 'acs-init)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; End:

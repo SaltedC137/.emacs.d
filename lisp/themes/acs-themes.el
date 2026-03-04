@@ -30,6 +30,6 @@
 (provide 'acs-themes)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; no-byte-compile: nil
 ;; End:
