@@ -17,6 +17,14 @@
 
 (keymap-global-set  "C-," #'rc/duplicate-line)
 
+;; rc/insert-timestamp
+
+(defun rc/insert-timestamp ()
+  (interactive)
+  (insert (format-time-string "(%Y%m%d-%H%M%S)" nil t)))
+
+(global-set-key (kbd "C-x p d") 'rc/insert-timestamp)
+
 ;; editor keyset
 
 (keymap-global-set "C-=" #'text-scale-increase)
@@ -34,6 +42,7 @@
 (keymap-global-set  "C-c m" #'tab-line-switch-to-next-tab)
 (keymap-global-set  "C-c n" #'tab-line-switch-to-prev-tab)
 (keymap-global-set  "C-c k" #'kill-current-buffer)
+
 
 
 

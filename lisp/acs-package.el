@@ -40,14 +40,12 @@
                                     embark
                                     swiper
                                     helpful
-                                    htmlize
                                     keycast
                                     dirvish
-                                    git-modes
                                     on-screen
                                     yaml-mode
                                     yasnippet
-				                    move-text
+		                    move-text
                                     drag-stuff
                                     marginalia
                                     ascii-table
@@ -56,7 +54,7 @@
                                     all-the-icons
                                     doom-modeline
                                     markdown-mode
-                                    benchmark-init
+                                    multiple-cursors
                                     page-break-lines
                                     rainbow-delimiters
                                     highlight-parentheses
