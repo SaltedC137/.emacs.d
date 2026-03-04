@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t; -*-
 
 
+;;; rc/duplicate-line
+
 (defun rc/duplicate-line()
   "duplicate current  line"
   (interactive)
@@ -13,6 +15,7 @@
     (move-beginning-of-line 1)
 (forward-char column)))
 
+(keymap-global-set  "C-," #'rc/duplicate-line)
 
 ;; editor keyset
 
@@ -26,11 +29,12 @@
 (keymap-global-set "M-<up>" #'move-text-up)
 (keymap-global-set "M-<down>" #'move-text-down)
 
+;; tab line $ buffer control
 
 (keymap-global-set  "C-c m" #'tab-line-switch-to-next-tab)
 (keymap-global-set  "C-c n" #'tab-line-switch-to-prev-tab)
 (keymap-global-set  "C-c k" #'kill-current-buffer)
-(keymap-global-set  "C-," #'rc/duplicate-line)
+
 
 
 

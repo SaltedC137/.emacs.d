@@ -47,7 +47,7 @@
                                     on-screen
                                     yaml-mode
                                     yasnippet
-				    move-text
+				                    move-text
                                     drag-stuff
                                     marginalia
                                     ascii-table
@@ -56,6 +56,7 @@
                                     all-the-icons
                                     doom-modeline
                                     markdown-mode
+                                    benchmark-init
                                     page-break-lines
                                     rainbow-delimiters
                                     highlight-parentheses

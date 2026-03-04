@@ -79,18 +79,18 @@
 ;; (require 'acs-tmp)      ; (find-file-other-window "./acs-tmp.el")
 ;; (require 'acs-org)      ; (find-file-other-window "./acs-org.el")
 ;; (require 'acs-abbrev)   ; (find-file-other-window "./acs-abbrev.el")
+(require 'acs-start)       ; (find-file-other-window "./acs-startup.el")
+(require 'acs-ui)          ; (find-file-other-window "./acs-ui.el")
 (require 'acs-themes)      ; (find-file-other-window "./themes/acs-themes.el")
+(require 'acs-sh)          ; (find-file-other-window "./acs-sh.el")
+(require 'acs-plugin)      ; (find-file-other-window "./acs-plugin.el")
+(require 'acs-key)         ; (find-file-other-window "./acs-keyboard.el")
 ;; (require 'acs-server)   ; (find-file-other-window "./acs-server.el")
 ;; (require 'acs-cc)       ; (find-file-other-window "./acs-cc.el")
 ;; (require 'acs-kbd)      ; (find-file-other-window "./acs-kbd.el")
-(require 'acs-sh)          ; (find-file-other-window "./acs-sh.el")
 ;; (require 'acs-yas)      ; (find-file-other-window "./acs-yas.el")
 ;; (require 'acs-profile)  ; (find-file-other-window "./acs-profile.el")
-(require 'acs-start)       ; (find-file-other-window "./acs-startup.el")
-(require 'acs-ui)          ; (find-file-other-window "./acs-ui.el")
 ;; (require 'acs-lib)      ; (find-file-other-window "./acs-lib.el")
-(require 'acs-plugin)      ; (find-file-other-window "./acs-plugin.el")
-(require 'acs-key)         ; (find-file-other-window "./acs-keyboard.el")
 
 
 
