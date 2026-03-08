@@ -6,9 +6,9 @@
 
 (add-hook 'before-init-hook
           (lambda ()
-            (defvar acs/c-clang-format-path "c:/Users/SallyFace/scoop/apps/mingw-winlibs-llvm-ucrt/14.2.0-19.1.1-12.0.0-r2/bin/clang-format.exe")
-            (defvar acs/c-clang-path "c:/Users/SallyFace/scoop/apps/mingw-winlibs-llvm-ucrt/14.2.0-19.1.1-12.0.0-r2/bin/clang.exe")
-            (defvar acs/c-commonlisp-path "D:/Progs/Steel-Bank-Common-Lisp/sbcl.exe")
+            (defvar acs/c-clang-format-path (or (executable-find "clang-format") "/usr/bin/clang-format"))
+            (defvar acs/c-clang-path (or (executable-find "clang") "/usr/bin/clang"))
+            (defvar acs/c-commonlisp-path (or (executable-find "sbcl") "/usr/bin/sbcl"))
             (defvar acs/c-email "saltedc137@gamil.com")
             (defvar acs/c-filename-coding 'chinese-gb18030)
             (defvar acs/c-os "MS-Windows 11")

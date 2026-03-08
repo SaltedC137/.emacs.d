@@ -4,7 +4,7 @@
 
 (require 'acs-init)
 
-(setq server-auth-dir "C:/Users/SallyFace/.emacs.d/server"
+(setq server-auth-dir (expand-file-name "server" user-emacs-directory
     server-name     "server.txt")
 
 (setq file-name-coding-system 'chinese-gb18030)

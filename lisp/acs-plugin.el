@@ -7,15 +7,9 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 (require 'lsp-bridge)
-(setq lsp-bridge-python-command "C:/Users/SallyFace/AppData/Local/Programs/Python/Python313/python.exe")
+(setq lsp-bridge-python-command (or (executable-find "python3") "/usr/bin/python3"))
 (global-lsp-bridge-mode)
 (setq lsp-bridge-enable-diagnostics t)
-
-
-
-
-
-
 
 (provide 'acs-plugin)
 
