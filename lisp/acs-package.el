@@ -43,6 +43,7 @@
                                     helpful
                                     keycast
                                     dirvish
+                                    dashboard
                                     on-screen
                                     yaml-mode
                                     yasnippet

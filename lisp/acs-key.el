@@ -17,7 +17,7 @@
 
 (keymap-global-set  "C-," #'rc/duplicate-line)
 
-;; rc/insert-timestamp (2026.03.05-09:51:28) 
+;; Rc/insert-timestamp (2026.03.05-09:51:28) 
 
 (defun rc/insert-timestamp ()
   (interactive)
