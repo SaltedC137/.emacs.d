@@ -221,7 +221,48 @@
 
 ;;; Tab Line Configuration with Icons
 
-(setq tab-line-mode -1)
+(require 'tab-line)
+(require 'nerd-icons nil t)
+
+(setopt tab-line-tabs-function  #'tab-line-tabs-buffer-groups)
+(setopt tab-line-close-button-show t)
+(setopt tab-line-new-button-show nil)
+(setopt tab-line-tab-name-truncated-max 10)
+
+(defun acs/tab-line-buffer-group (buffer)
+  "For tab line providing buffer group"
+  (with-current-buffer buffer
+    (cond
+     ((and (fboundp 'project-current)(project-current))
+      (file-name-nondirectory (directory-file-name (project-root (project-current)))))
+     ((string-match-p "^\\*" (buffer-name))
+      "Emacs/System")
+     (t
+      (format "%s" mode-name)))))
+
+(setopt tab-line-tabs-function #'acs/tab-line-buffer-group)
+
+
+(defun acs/tab-line-name-buffer (buffer &optional _buffers)
+  "for tab line add buffer icons"
+  (let* ((name (buffer-name buffer))
+	 (icon (if (and (featurep 'nerd-icons)
+			(display-graphic-p))
+		   (with-current-buffer buffer
+		     (cond
+		      ((derived-mode-p 'eshell-mode) (nerd-icons-codicon "nf-cod-termial"))
+		      ((derived-mode-p 'magit-mode) (nerd-icons-codicon "nf-oct-git_merge"))
+		      (t (nerd-icons-icon-for-buffer buffer))))
+		 "")))
+    (if (string-empty-p icon)
+	(format " %s " name)
+      (format " %s %s " icon name))))
+
+(setopt tab-line-tab-name-function #acs/tab-line-name-buffer)
+
+
+
+
 
 ;;; Window:
 
