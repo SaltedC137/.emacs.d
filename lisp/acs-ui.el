@@ -216,25 +216,11 @@
 (with-eval-after-load 'tab-bar
     (setq tab-prefix-map nil))
 
-;;; Tab Line:
 
-(setq tab-line-close-button-show nil
-    tab-line-new-button-show nil
-    ;; 关闭 tab-line-name 之间默认的空格.
-    tab-line-separator "")
-;; Tab line 
-(setopt tab-line-switch-cycling nil)
-(setq-default tab-line-format `(:eval (mapcar ',(prog1 (lambda (buffer-tab-line-name)
-                                                (concat (let ((-buffer-icon (when (get-buffer buffer-tab-line-name)
-                                                                                (with-current-buffer buffer-tab-line-name
-                                                                                (all-the-icons-icon-for-buffer)))))
-                                                        (if (stringp -buffer-icon)
-                                                                -buffer-icon
-                                                                ""))
-                                                        buffer-tab-line-name))
-                                        (require 'all-the-icons))
-                                        (tab-line-format))))
-(global-tab-line-mode)
+
+;;; Tab Line Configuration with Icons
+
+
 
 ;;; Window:
 
@@ -304,7 +290,7 @@
         doom-modeline-minor-modes nil)
 (setopt doom-modeline-bar-width 3  ; 左侧 小竖条 (装饰品) 的 宽度.
         ;; 尽可能地窄.
-        doom-modeline-height 32
+        doom-modeline-height 20
         ;; 即使当前窗口宽度很小, 也尽量显示所有信息.
         doom-modeline-window-width-limit nil)
 (doom-modeline-mode)
@@ -338,7 +324,7 @@
 
 (require 'time)
 (setopt display-time-format "%a%b%d%p%I:%M"
-        display-time-day-and-date "若‘display-time-format’是 nil 则使用默认的日期显示方式"
+        display-time-day-and-date t
         display-time-24hr-format nil)
 (setq display-time-mail-icon (find-image '(
                                            (:type xpm :file "letter.xpm" :ascent center)
@@ -432,5 +418,5 @@
 (provide 'acs-ui)
 
 ;; Local Variables:
-;; coding: unicode
+;; coding: utf-8
 ;; End:

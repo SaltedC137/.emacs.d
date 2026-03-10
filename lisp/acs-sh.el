@@ -16,7 +16,7 @@
 ;;                 (display-line-numbers-mode -1))))  
 ;;   (setq vterm-max-scrollback 10000))
 
-;; (provide 'acs-sh)
+(provide 'acs-sh)
 
 ;; Local Variables:
 ;; coding: utf-8

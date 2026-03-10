@@ -85,6 +85,7 @@
 (require 'acs-sh)          ; (find-file-other-window "./acs-sh.el")
 (require 'acs-plugin)      ; (find-file-other-window "./acs-plugin.el")
 (require 'acs-key)         ; (find-file-other-window "./acs-keyboard.el")
+(require 'acs-dired)       ; (find-file-other-window "./acs-dired.el")
 ;; (require 'acs-server)   ; (find-file-other-window "./acs-server.el")
 ;; (require 'acs-cc)       ; (find-file-other-window "./acs-cc.el")
 ;; (require 'acs-kbd)      ; (find-file-other-window "./acs-kbd.el")

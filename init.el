@@ -4,10 +4,12 @@
 
 (require 'acs-init)
 
-(setq server-auth-dir (expand-file-name "server" user-emacs-directory
-    server-name     "server.txt")
+(setq server-auth-dir (expand-file-name "server" user-emacs-directory)
+      server-name     "server")
 
-(setq file-name-coding-system 'chinese-gb18030)
+(set-language-environment "UTF-8")
+(setq default-process-coding-system '(utf-8 . utf-8))
+
 
 ;; Local Variables:
 ;; coding: utf-8

@@ -143,7 +143,7 @@
   (dashboard-no-items-face ((t (:weight normal))))
   :custom
   (dashboard-icon-type 'nerd-icons)
-  (dashboard-page-separator "\f\n")
+  (dashboard-page-separator "\n")
   (dashboard-path-style 'truncate-middle)
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
@@ -169,6 +169,9 @@
      dashboard-insert-newline
      dashboard-insert-footer)))
 
+(setq initial-buffer-choice 'dashboard-open)
+(add-hook 'server-after-make-frame-hook 'dashboard-open)
+
 ;; Display ugly ^L page breaks as tidy horizontal lines
 (use-package page-break-lines
   :ensure t
@@ -184,6 +187,8 @@
 ;; 只有设为自己在 OS 中的 username, 才能屏蔽启动时 echo area 的 “For information about GNU Emacs and the GNU system, type C-h C-a.”
 (put 'inhibit-startup-echo-area-message  ; 需要如此 hack.
     'saved-value `(,(setq inhibit-startup-echo-area-message user-login-name)))
+
+
 
 
 (add-hook 'post-command-hook
@@ -244,5 +249,5 @@
 (provide 'acs-start)
 
 ;; Local Variables:
-;; coding: unicode
+;; coding: utf-8
 ;; End:

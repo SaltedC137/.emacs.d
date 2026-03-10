@@ -37,7 +37,7 @@
 
 (setopt package-selected-packages '(ivy
                                     sly
-				                    magit
+				    magit
                                     embark
                                     swiper
                                     helpful
@@ -47,7 +47,8 @@
                                     on-screen
                                     yaml-mode
                                     yasnippet
-		                            move-text
+		                    move-text
+				    projectile
                                     drag-stuff
                                     marginalia
                                     ascii-table
