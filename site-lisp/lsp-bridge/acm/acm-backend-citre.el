@@ -1,4 +1,4 @@
-;;; acm-backend-citre.el --- Citre backend for acm  -*- lexical-binding: t -*-
+;;; acm-backend-citre.el --- Citre backend for acm  -*- lexical-binding: t; no-byte-compile: t; -*-
 
 ;; Filename: acm-backend-citre.el
 ;; Description: Citre backend for acm
@@ -201,7 +201,7 @@
                   :key candidate-fix
                   :icon (downcase annotation)
                   :label candidate-fix
-                  :display-label candidate-fix
+                  :displayLabel candidate-fix
                   :annotation annotation
                   :backend "citre")))))
           collection))))))

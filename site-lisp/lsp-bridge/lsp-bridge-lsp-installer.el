@@ -86,22 +86,24 @@
 (defun lsp-bridge-install-omnisharp ()
   (interactive)
   (let* ((to-append (if (string= lsp-bridge-csharp-lsp-server "omnisharp-dotnet")
-			(if (eq system-type 'windows-nt)
-			    "omnisharp-win-x64-net6.0.zip"
-			  "omnisharp-linux-x64-net6.0.zip")
-		      "omnisharp-mono.zip"))
-	(url (concat "https://github.com/OmniSharp/omnisharp-roslyn/releases/latest/download/" to-append))
-        (down-des (if (eq system-type 'windows-nt)
+                        (cond
+                         ((eq system-type 'windows-nt) "omnisharp-win-x64-net6.0.zip")
+                         ((eq system-type 'darwin)
+                          (if (eq (car (split-string system-configuration "-")) 'aarch64)
+			                  "omnisharp-osx-arm64-net6.0.zip"
+			                "omnisharp-osx-x64-net6.0.zip"))
+                         (t "omnisharp-linux-x64-net6.0.zip"))
+		              "omnisharp-mono.zip"))
+	     (url (concat "https://github.com/OmniSharp/omnisharp-roslyn/releases/latest/download/" to-append))
+         (down-des (if (eq system-type 'windows-nt)
                        (substitute-in-file-name (concat "\\$USERPROFILE\\AppData\\Local\\Temp\\" to-append))
-                    "/tmp/omnisharp-mono.zip"))
-        (install-des (if (eq system-type 'windows-nt)
-                         (expand-file-name (format "%s.cache/omnisharp/" user-emacs-directory))
-                       "~/.emacs.d/.cache/omnisharp/"
-                       (format "%s.cache/omnisharp/" user-emacs-directory))))
+                     "/tmp/omnisharp-mono.zip"))
+         (install-des (expand-file-name (concat user-emacs-directory (file-name-as-directory ".cache") (file-name-as-directory "omnisharp")))))
     (url-copy-file url down-des 1)
     (unless (file-directory-p install-des)
       (make-directory install-des t))
     (call-process-shell-command (format "%s -xf %s -C %s" "tar" down-des install-des))
+    (call-process-shell-command (format "chmod +x %s" (format "%sOmniSharp" install-des)))
     ))
 
 (defconst tabnine-bridge--version-tempfile "version")
@@ -118,8 +120,8 @@ Only useful on GNU/Linux.  Automatically set if NixOS is detected."
   :type 'boolean)
 
 (defcustom codeium-download-url-prefix "https://github.com/Exafunction/codeium/releases/download/language-server-v"
-   "codeium download url prefix"
-   :type 'string)
+  "codeium download url prefix"
+  :type 'string)
 
 (defun tabnine-bridge--get-target ()
   "Return TabNine's system configuration.  Used for finding the correct binary."
@@ -251,13 +253,13 @@ Only useful on GNU/Linux.  Automatically set if NixOS is detected."
                       "x64")
                      (t "arm")))
          (platform (cond ((eq system-type 'gnu/linux)
-                        "linux")
-                       ((or (eq system-type 'ms-dos)
-                            (eq system-type 'windows-nt)
-                            (eq system-type 'cygwin))
-                        "windows")
-                       ((eq system-type 'darwin)
-                        "macos")))
+                          "linux")
+                         ((or (eq system-type 'ms-dos)
+                              (eq system-type 'windows-nt)
+                              (eq system-type 'cygwin))
+                          "windows")
+                         ((eq system-type 'darwin)
+                          "macos")))
          (extension (if (or (eq system-type 'ms-dos)
                             (eq system-type 'windows-nt)
                             (eq system-type 'cygwin))
@@ -276,7 +278,11 @@ Only useful on GNU/Linux.  Automatically set if NixOS is detected."
          (compress-file (concat binary-dir file-name))
          (binary-file (string-trim-right compress-file "\\.gz"))
          ;; Binary file after rename
-         (last-binary-file (concat binary-dir "language_server"))
+         (last-binary-file (if (or (eq system-type 'ms-dos)
+                                   (eq system-type 'windows-nt)
+                                   (eq system-type 'cygwin))
+                               (concat binary-dir "language_server.exe")
+                             (concat binary-dir "language_server")))
          (download-url (concat codeium-download-url-prefix version "/" file-name)))
     (make-directory binary-dir t)
     (if (string= version codeium-bridge-binary-version)

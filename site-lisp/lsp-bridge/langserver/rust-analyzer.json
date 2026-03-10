@@ -3,6 +3,14 @@
   "languageId": "rust",
   "command": ["rust-analyzer"],
   "settings": {},
+  "projectFiles": ["Cargo.toml"],
+  "capabilities": {
+    "textDocument": {
+      "hover": {
+        "contentFormat": ["markdown"]
+      }
+    }
+  },
   "initializationOptions": {
     "enableExperimental": false,
     "diagnostics": {
@@ -14,10 +22,21 @@
       "runBuildScripts": true,
       "loadOutDirsFromCheck": true,
       "useRustcWrapperForBuildScripts": true,
-      "autoreload": true,
+      "autoreload": false,
       "buildScripts": {
-        "enable": true
-      }
+        "enable": true,
+        "rebuildOnSave": false,
+        "invocationLocation": "root",
+        "invocationStrategy": "once",
+        "overrideCommand": null
+        }
+      },
+    "checkOnSave": {
+      "enable": true,
+      "allTargets": true,
+      "features": "all",
+      "invocationLocation": "root",
+      "invocationStrategy": "once"
     },
     "completion": {
       "addCallParenthesis": true,

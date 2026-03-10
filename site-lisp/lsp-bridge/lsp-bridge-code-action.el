@@ -1,4 +1,4 @@
-;;; lsp-bridge-code-action.el --- Code action for lsp-bridge   -*- lexical-binding: t; -*-
+;;; lsp-bridge-code-action.el --- Code action for lsp-bridge   -*- lexical-binding: t; no-byte-compile: t; -*-*-
 
 ;; Filename: lsp-bridge-code-action.el
 ;; Description: Code action for lsp-bridge
@@ -126,7 +126,7 @@ Set it `nil' to improve performance."
 
 Default request all kind code-action.
 
-You can send speical kind of code-action, parameter `action-kind' can use one of below:
+You can send special kind of code-action, parameter `action-kind' can use one of below:
 
 'quickfix'
 'refactor'
@@ -172,6 +172,9 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
               (call-frame-height (frame-height lsp-bridge-call-hierarchy--frame))
               (call-frame-width (frame-width lsp-bridge-call-hierarchy--frame))
               (width 0) (height 0)
+              (menu-window-height
+               (min (length lsp-bridge-call-hierarchy--popup-response)
+                    (/ (frame-height acm-frame--emacs-frame) 4))) ;; make sure menu-window not exceed 1/4 of frame height
               (window-min-height 0) (window-min-width 0)
               (live-p (frame-live-p lsp-bridge-call-hierarchy--frame)))
     (with-current-buffer  "*lsp-bridge-code-action-preview*"
@@ -183,9 +186,11 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
         (insert buffer-content))
        (t
         (goto-char (point-min))
-        ;; delete info lines
+
+        ;; Delete info lines.
         (kill-line 3)
-        ;; delete finish
+
+        ;; Delete finish.
         (goto-char (point-min))
         (when (search-forward "Diff finished." nil t)
           (beginning-of-line)
@@ -193,7 +198,7 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
         (push (cons lsp-bridge-code-action--preview-index (buffer-string))
               lsp-bridge-code-action--preview-alist)))
 
-      ;; get width and height
+      ;; Get width and height.
       (goto-char (point-min))
       (while (not (eobp))
         (cl-incf height)
@@ -202,17 +207,22 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
                          width))
         (forward-line))
       (setq width (min width 80))
-      ;; show top
+
+      ;; Show top.
       (goto-char (point-min))
-      ;; truncate lines
+
+      ;; Truncate lines.
       (setq-local cursor-type nil)
       (setq-local mode-line-format nil)
-      (setq-local truncate-lines t))
+      (setq-local truncate-lines t)
+
+      ;; Render ANSI string.
+      (ansi-color-apply-on-region (point-min) (point-max)))
 
     (acm-frame-set-frame-size lsp-bridge-call-hierarchy--frame
                               (max width call-frame-width)
-                              (+ height (length lsp-bridge-call-hierarchy--popup-response)))
-    (acm-frame-adjust-frame-pos lsp-bridge-call-hierarchy--frame)
+                              (+ height menu-window-height))
+    (acm-frame-adjust-frame-pos lsp-bridge-call-hierarchy--frame nil nil t)
     (select-frame-set-input-focus lsp-bridge-call-hierarchy--frame)
 
     (let ((menu-window (get-buffer-window "*lsp-bridge-code-action-menu*"
@@ -231,8 +241,7 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
           (unless (eq window menu-window)
             (set-window-buffer window "*lsp-bridge-code-action-preview*")))
         (select-window menu-window)
-        (set-window-text-height menu-window
-                                (length lsp-bridge-call-hierarchy--popup-response))))))
+        (set-window-text-height menu-window menu-window-height)))))
 
 (defun lsp-bridge-code-action-popup-maybe-preview-do ()
   (let* ((buffer (buffer-name lsp-bridge-code-action--current-buffer))
@@ -255,7 +264,7 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
         (diff-no-select lsp-bridge-code-action--current-buffer (current-buffer)
                         nil nil (get-buffer-create "*lsp-bridge-code-action-preview*")))
 
-      (if-let ((proc (get-buffer-process "*lsp-bridge-code-action-preview*")))
+      (if-let* ((proc (get-buffer-process "*lsp-bridge-code-action-preview*")))
           (set-process-sentinel
            proc (lambda (proc _msg)
                   (with-current-buffer (process-buffer proc)
@@ -312,7 +321,8 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
     ;; Don't adjust frame position if code action menu current is visible.
     (unless menu-frame-exist
       (acm-frame-set-frame-position lsp-bridge-call-hierarchy--frame (car cursor) (+ (cdr cursor) (line-pixel-height)))
-      (acm-frame-set-frame-size lsp-bridge-call-hierarchy--frame menu-width menu-length))
+      (acm-frame-set-frame-size lsp-bridge-call-hierarchy--frame menu-width
+                                (min menu-length (/ (frame-height acm-frame--emacs-frame) 4))))
 
     (advice-add 'lsp-bridge-call-hierarchy-maybe-preview :override #'lsp-bridge-code-action-popup-maybe-preview)
     (advice-add 'lsp-bridge-call-hierarchy-select :override #'lsp-bridge-code-action-popup-select)
@@ -342,15 +352,24 @@ Please read https://microsoft.github.io/language-server-protocol/specifications/
      ;; Command is string, send `workspace/executeCommand' request to LSP server. arguments are cached in Python side.
      ((stringp command)
       ;; Execute command with temp-buffer.
-      (lsp-bridge-call-file-api "execute_command" server_name command))
+      (lsp-bridge-call-file-api "execute_command" server_name command arguments))
      ;; Parse command argument if command is plist, and call `lsp-bridge-code-action--fix-do' again.
-     ((plistp command)
-      ;; We need add server-name in `command', otherwise `lsp-bridge-code-action--fix-do' will send empty server name to Python.
-      (let ((server-command command))
-        (plist-put server-command :server-name server_name)
-        (lsp-bridge-code-action--fix-do command temp-buffer))))
+     ((lsp-bridge-plistp command)
+      ;; We need add server-name in `next-action', otherwise `lsp-bridge-code-action--fix-do' will send empty server name to Python.
+      (let ((next-action command))
+        (plist-put next-action :server-name server_name)
+        (lsp-bridge-code-action--fix-do next-action temp-buffer))))
     (unless temp-buffer
-      (message "[LSP-BRIDGE] Execute code action '%s'" (plist-get action :title)))))
+      (message "[LSP-BRIDGE] Execute code action '%s'" (plist-get action :title)))
+
+    ;; Hide diagnostics after code action.
+    (lsp-bridge-diagnostic-hide-overlays)))
+
+(defun lsp-bridge-plistp (object)
+  "Non-nil if and only if OBJECT is a valid plist."
+  (declare (pure t) (side-effect-free error-free))
+  (let ((len (proper-list-p object)))
+    (and len (zerop (% len 2)))))
 
 (defun lsp-bridge-code-action--filter (action action-kind)
   (when (or (not action-kind)

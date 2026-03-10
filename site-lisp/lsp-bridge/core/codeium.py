@@ -53,6 +53,7 @@ class Codeium:
         insert_spaces,
         prefix,
         language,
+        file_path
     ):
         self.get_info()
         self.run_local_server()
@@ -77,9 +78,10 @@ class Codeium:
                 "cursor_offset": cursor_offset,
                 "editor_language": editor_language,
                 "text": text,
+                "absolute_path_migrate_me_to_uri": file_path,
                 "language": language,
             },
-            "editor_options": {"insert_spaces": insert_spaces, "tab_size": tab_size},
+            "editor_options": {"insert_spaces": True if insert_spaces else False, "tab_size": tab_size},
         }
 
         self.dispatch(
@@ -172,7 +174,7 @@ class Codeium:
                     "key": label,
                     "icon": "codeium",
                     "label": label,
-                    "display-label": display_label,
+                    "displayLabel": display_label,
                     "annotation": annotation,
                     "backend": "codeium",
                     "documentation": document,
@@ -257,7 +259,7 @@ class Codeium:
         self.is_get_info = True
 
     def get_server_port(self):
-        pattern = re.compile("\\d{5}")
+        pattern = re.compile(r"\d{5}")
 
         while True:
             try:
@@ -290,5 +292,6 @@ class Codeium:
             with urllib.request.urlopen(req) as response:
                 response_data = response.read().decode("utf-8")
                 return parse_json_content(response_data)
-        except:
+        except Exception as e:
+            print("Codeium request error", e, url)
             return {}

@@ -1,4 +1,4 @@
-;;; acm-backend-codeium.el --- acm codeium support -*- lexical-binding: t -*-
+;;; acm-backend-codeium.el --- acm codeium support -*- lexical-binding: t; no-byte-compile: t; -*-
 
 ;;; Commentary:
 
@@ -66,7 +66,6 @@
 	(c++-mode . 4)
 	(c++-ts-mode . 4)
 	(csharp-mode . 5)
-	(csharp-tree-sitter-mode . 5)
 	(csharp-ts-mode . 5)
 	(css-mode . 6)
 	(css-ts-mode . 6)
@@ -109,6 +108,7 @@
 	(perl-mode . 28)
 	(cperl-mode . 28)
 	(php-mode . 29)
+	(php-ts-mode . 29)
 	(text-mode . 30)
 	(python-mode . 33)
 	(python-ts-mode . 33)
@@ -119,10 +119,12 @@
 	(ruby-ts-mode . 35)
 	(rust-mode . 36)
 	(rust-ts-mode . 36)
+	(rstml-ts-mode . 36)
 	(rustic-mode . 36)
 	(sass-mode . 37)
 	(ssass-mode . 37)
 	(scala-mode . 38)
+	(scala-ts-mode . 38)
 	(scss-mode . 39)
 	(sh-mode . 40)
 	(ebuild-mode . 40)
@@ -151,9 +153,11 @@
 	(lisp-data-mode . 60)))
 
 (defun acm-backend-codeium-candidates (keyword)
-  (when (and acm-backend-codeium-items
-             (>= (length keyword) acm-backend-codeium-candidate-min-length))
-    acm-backend-codeium-items))
+  (acm-with-cache-candidates
+   acm-backend-codeium-cache-candiates
+   (when (and acm-backend-codeium-items
+              (>= (length keyword) acm-backend-codeium-candidate-min-length))
+     acm-backend-codeium-items)))
 
 (defun acm-backend-codeium-candidate-expand (candidate-info bound-start &optional preview)
   ;; We need replace whole area with codeium label.
@@ -172,7 +176,8 @@
   (plist-get candidate :documentation))
 
 (defun acm-backend-codeium-clean ()
-  (setq-local acm-backend-codeium-items nil))
+  (setq-local acm-backend-codeium-items nil)
+  (setq-local acm-backend-codeium-cache-candiates nil))
 
 (provide 'acm-backend-codeium)
 ;;; acm-backend-codeium.el ends here

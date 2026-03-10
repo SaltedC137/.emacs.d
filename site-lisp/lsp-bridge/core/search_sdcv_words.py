@@ -109,14 +109,14 @@ class SearchSdcvWords:
     def search_words(self, prefix: str, ticker: int):
         candidates = []
         
-        prefix_regexp = re.compile(".*".join(prefix))
+        prefix_regexp = re.compile(r".*".join(prefix))
         if len(prefix.lower()) > 3 and prefix.lower() in self.pinyin:
             for word, translation in self.pinyin[prefix.lower()].items():
                 candidate = {
                     "key": word,
                     "icon": "translation",
                     "label": word,
-                    "display-label": self.adjust_word_case(prefix, word),
+                    "displayLabel": self.adjust_word_case(prefix, word),
                     "annotation": translation,
                     "backend": "search-sdcv-words"
                 }
@@ -130,7 +130,7 @@ class SearchSdcvWords:
                     "key": word,
                     "icon": "translation",
                     "label": word,
-                    "display-label": self.adjust_word_case(prefix, word),
+                    "displayLabel": self.adjust_word_case(prefix, word),
                     "annotation": translation,
                     "backend": "search-sdcv-words"
                 }
@@ -140,5 +140,5 @@ class SearchSdcvWords:
                     break
                 
         if ticker == self.search_ticker:
-            eval_in_emacs("lsp-bridge-search-backend--record-items", "sdcv-words", 
+            eval_in_emacs("lsp-bridge-search-backend--record-items", "search-sdcv-words",
                           sorted(candidates, key=functools.cmp_to_key(lambda a, b: self.sort_words(prefix, a, b))))

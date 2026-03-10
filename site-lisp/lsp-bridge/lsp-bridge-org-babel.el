@@ -1,4 +1,4 @@
-;;; lsp-bridge-org-babel.el --- lsp-bridge for Org Babel -*- lexical-binding: t; -*-
+;;; lsp-bridge-org-babel.el --- lsp-bridge for Org Babel -*- lexical-binding: t; no-byte-compile: t; -*-*-
 ;;
 ;; Copyright (C) 2023 royokong
 ;;
@@ -66,8 +66,11 @@
 
 (defun lsp-bridge-org-babel-get-single-lang-server ()
   "Get single lang server for org block."
-  (let* ((lang (org-element-property :language lsp-bridge-org-babel--info-cache))
-         (lang-name (symbol-name (cdr (assoc lang org-src-lang-modes))))
+  (let* ((lang (org-element-property :language lsp-bridge-org-babel--info-cache)) ;get language name in src block
+         (org-src-lang (cdr (assoc lang org-src-lang-modes))) ;find match language name from `org-src-lang-modes'
+         (lang-name (if org-src-lang
+                        (symbol-name org-src-lang) ;convert to symbol name if found in `org-src-lang-modes'
+                      (format "%s" lang))) ;otherwise use src block name
          (mode-name (concat lang-name "-mode"))
          (major-mode (intern mode-name))
          (langserver-info
@@ -91,6 +94,14 @@
     (when (or (not (lsp-bridge-org-babel-in-block-p begin))
               (<= lsp-bridge-org-babel--block-eop lsp-bridge-org-babel--block-bop))
       (lsp-bridge-org-babel-clean-cache))))
+
+(defun lsp-bridge-org-babel-send-src-block-to-lsp-server ()
+  (when (and lsp-bridge-enable-org-babel (eq major-mode 'org-mode)
+             lsp-bridge-org-babel--block-bop
+             lsp-bridge-org-babel--update-file-before-change)
+    (setq-local lsp-bridge-org-babel--update-file-before-change nil)
+    (lsp-bridge-call-file-api "update_file" (buffer-name)
+                              (1- (line-number-at-pos lsp-bridge-org-babel--block-bop t)))))
 
 (provide 'lsp-bridge-org-babel)
 ;;; lsp-bridge-org-babel.el ends here

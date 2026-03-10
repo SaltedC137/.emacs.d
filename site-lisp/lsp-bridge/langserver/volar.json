@@ -5,11 +5,9 @@
     "vue-language-server",
     "--stdio"
   ],
+  "projectFiles": ["package.json"],
   "settings": {},
   "initializationOptions": {
-    "typescript": {
-      "tsdk": "/usr/lib/node_modules/typescript/lib"
-    },
     "languageFeatures": {
       "references": true,
       "implementation": true,

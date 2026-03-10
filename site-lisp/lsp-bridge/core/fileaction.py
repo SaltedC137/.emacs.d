@@ -18,18 +18,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import os
 import pprint
 import threading
 import time
-import os
-from typing import Dict, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Tuple
 
+from core.handler import *
+from core.handler import Diagnostic
 from core.lspserver import LspServer
 from core.utils import *
-from core.handler import *
 
 if TYPE_CHECKING:
-    from lsp_bridge import LspBridge
+    from lsp_bridge import LspBridge  # noqa: F401
 
 def create_file_action_with_single_server(filepath, single_server_info, single_server, external_file_link=None):
     if is_in_path_dict(FILE_ACTION_DICT, filepath):
@@ -61,7 +62,7 @@ class FileAction:
         self.completion_items = {}
 
         self.diagnostics = {}
-        self.diagnostics_ticker = 0
+        self.diagnostics_ticker = {}
 
         self.external_file_link = external_file_link
         self.filepath = filepath
@@ -78,6 +79,9 @@ class FileAction:
         self.org_file = os.path.splitext(filepath)[-1] == '.org'
         self.org_line_bias = None
 
+        self.pull_diagnostic_timer = None
+        self.last_diagnostic_version = None
+
         # We need multiple servers to handle org files
         self.org_lang_servers = {}
         self.org_server_infos = {}
@@ -93,6 +97,9 @@ class FileAction:
 
         (self.enable_auto_import,
          self.completion_items_limit,
+         self.completion_match_mode,
+         self.completion_case_mode,
+         self.completion_workspace_symbol_items_limit,
          self.insert_spaces,
          self.enable_push_diagnostics,
          self.push_diagnostic_idle,
@@ -100,12 +107,16 @@ class FileAction:
          self.diagnostics_max_number) = get_emacs_vars([
              "acm-backend-lsp-enable-auto-import",
              "acm-backend-lsp-candidates-max-number",
+             "acm-backend-lsp-match-mode",
+             "acm-backend-lsp-case-mode",
+             "acm-backend-lsp-workspace-symbol-candidates-max-number",
              "indent-tabs-mode",
              "lsp-bridge-enable-diagnostics",
              "lsp-bridge-diagnostic-fetch-idle",
              "acm-backend-lsp-candidate-max-length",
              "lsp-bridge-diagnostic-max-number"
         ])
+        self.completion_block_kind_list = None
         self.insert_spaces = not self.insert_spaces
 
         self.set_lsp_server()
@@ -121,6 +132,8 @@ class FileAction:
             self.method_handlers[lsp_server.server_info["name"]] = method_handlers_dict
 
             lsp_server.attach(self)
+
+        self.pull_diagnostics()
 
         # Set acm-input-bound-style when opened file.
         if self.single_server_info is not None:
@@ -144,6 +157,16 @@ class FileAction:
                 file_content = f.read()
         return file_content
 
+    def get_method_server_names(self, method: str):
+        default = self.multi_servers_info.get("default", None)
+        if method in ["completion", "completion_item_resolve", "diagnostics", "code_action"]:
+            method_server_names = self.multi_servers_info.get(method, default)
+            if not isinstance(method_server_names, list):
+                method_server_names = [method_server_names]
+        else:
+            method_server_names = [self.multi_servers_info.get(method, default)]
+        return method_server_names
+
     def call(self, method, *args, **kwargs):
         """Call any handler or method of file action."""
         if method in self.handlers:
@@ -151,11 +174,11 @@ class FileAction:
             if self.single_server:
                 self.send_request(self.single_server, method, handler, *args, **kwargs)
             else:
-                if method in ["completion", "completion_item_resolve", "diagnostics", "code_action", "execute_command"]:
-                    method_server_names = self.multi_servers_info[method]
+                if method in ["execute_command"]:
+                    # "execute_command" is trigger by code action, one time only need send request to *ONE* LSP server.
+                    method_server_names = [args[0]] # first arguments if server name.
                 else:
-                    method_server_names = [self.multi_servers_info[method]]
-
+                    method_server_names = self.get_method_server_names(method)
                 for method_server_name in method_server_names:
                     method_server = self.multi_servers[method_server_name]
                     self.send_request(method_server, method, handler, *args, **kwargs)
@@ -164,8 +187,10 @@ class FileAction:
 
     def send_request(self, method_server, method, handler, *args, **kwargs):
         if hasattr(handler, "provider"):
-            if getattr(method_server, getattr(handler, "provider")):
-                self.send_server_request(method_server, method, *args, **kwargs)
+            method_provider = getattr(method_server, getattr(handler, "provider"), None)
+            if method_provider is not None:
+                if method_provider is not False:
+                    self.send_server_request(method_server, method, *args, **kwargs)
             elif hasattr(handler, "provider_message"):
                 message_emacs(getattr(handler, "provider_message"))
         else:
@@ -175,11 +200,8 @@ class FileAction:
         if self.org_file:
             if self.org_line_bias is None:
                 return
-
-            line_bias = self.org_line_bias
-            start['line'] -= line_bias
-            end['line'] -= line_bias
-            position['line'] -= line_bias
+            start['line'] -= self.org_line_bias
+            end['line'] -= self.org_line_bias
 
         buffer_content = ''
         # Send didChange request to LSP server.
@@ -203,9 +225,23 @@ class FileAction:
         self.last_change_file_time = time.time()
 
         # Send textDocument/completion 100ms later.
-        delay = 0 if is_running_in_server() else 0.1
-        self.try_completion_timer = threading.Timer(delay, lambda : self.try_completion(position, before_char, prefix, self.version))
-        self.try_completion_timer.start()
+        if self.completion_block_kind_list is None:
+            (self.completion_block_kind_list, ) = get_emacs_vars(["acm-backend-lsp-block-kind-list"])
+            if isinstance(self.completion_block_kind_list, list):
+                self.completion_block_kind_list = list(map(lambda x: x.lower(), self.completion_block_kind_list))
+
+        if position['line'] < 0:
+            # TODO fix this from elisp happened in org source code completion
+            # We can temporary fix this by ignore this case,
+            # which will not influence the completion result.
+            logger.error("Invalid position change file", start, end, range_length, change_text, position, before_char, buffer_name, prefix, self.org_line_bias)
+        else:
+            delay = 0 if is_running_in_server() else 0.1
+            self.try_completion_timer = threading.Timer(delay, lambda : self.try_completion(position, before_char, prefix, self.version))
+            self.try_completion_timer.start()
+
+        # Pull diagnostics after file changes
+        self.pull_diagnostics()
 
     def update_file(self, buffer_name, org_line_bias=None):
         self.org_line_bias = org_line_bias
@@ -214,30 +250,103 @@ class FileAction:
             lsp_server.send_whole_change_notification(self.filepath, self.version, buffer_content)
         self.version += 1
 
-    def try_completion(self, position, before_char, prefix, version):
+        # Pull diagnostics after file update if server supports it
+        self.pull_diagnostics()
+
+    def pull_diagnostics(self):
+        """Request diagnostics from servers that support pull-based diagnostics."""
+        if self.last_diagnostic_version == self.version:
+            return
+
+        self.last_diagnostic_version = self.version
+
+        # Cancel any pending diagnostic pulls
+        if self.pull_diagnostic_timer and self.pull_diagnostic_timer.is_alive():
+            self.pull_diagnostic_timer.cancel()
+
+        delay = self.push_diagnostic_idle
+        self.pull_diagnostic_timer = threading.Timer(delay, self._do_pull_diagnostics)
+        self.pull_diagnostic_timer.start()
+
+    def _do_pull_diagnostics(self):
+        """Actually send the diagnostic requests to the servers."""
+        if self.multi_servers:
+            for server_name in self.get_method_server_names('diagnostics'):
+                lsp_server = self.multi_servers[server_name]
+                if lsp_server.diagnostic_provider and lsp_server.enable_diagnostics:
+                    self.send_request(lsp_server, 'diagnostic', Diagnostic, lsp_server.server_info["name"])
+        else:
+            if self.single_server.diagnostic_provider and self.single_server.enable_diagnostics:
+                self.send_request(self.single_server, 'diagnostic', Diagnostic, self.single_server.server_info["name"])
+
+    def try_completion(self, position, before_char, prefix, version=None):
+        # If we call try_completion from Elisp side, Emacs don't know the version of FileAction.
+        # So we need fill version if it is None.
+        if self.org_file:
+            # update line bias in `try_completion` instead of `change_file`
+            # to avoid mismatch when `try_completion` is called directly through `lsp-bridge-popup-complete-menu`
+            if self.org_line_bias is None:
+                return
+            position['line'] -= self.org_line_bias
+
+        if version is None:
+            version = self.version
+
         if self.multi_servers:
             for lsp_server in self.multi_servers.values():
-                if lsp_server.server_info["name"] in self.multi_servers_info["completion"]:
+                if lsp_server.server_info["name"] in self.get_method_server_names("completion"):
+                    # Send code completion request.
                     self.send_server_request(lsp_server, "completion", lsp_server, position, before_char, prefix, version)
+
+                    # Send workspace symbol completion request.
+                    if lsp_server.workspace_symbol_provider:
+                        self.send_server_request(lsp_server, "completion_workspace_symbol", lsp_server, prefix)
         else:
+            # Send code completion request.
             self.send_server_request(self.single_server, "completion", self.single_server, position, before_char, prefix, version)
+
+            # Send workspace symbol completion request.
+            if self.single_server.workspace_symbol_provider:
+                self.send_server_request(self.single_server, "completion_workspace_symbol", self.single_server, prefix)
+
+    def try_formatting(self, start, end, *args, **kwargs):
+        if self.multi_servers:
+            for lsp_server in self.multi_servers.values():
+                if lsp_server.server_info["name"] in self.get_method_server_names("formatting"):
+                    if start == end:
+                        self.send_request(lsp_server, "formatting", Formatting, *args, **kwargs)
+                    else:
+                        self.send_request(lsp_server, "rangeFormatting", RangeFormatting, start, end, *args, **kwargs)
+        else:
+            if start == end:
+                self.send_request(self.single_server, "formatting", Formatting, *args, **kwargs)
+            else:
+                self.send_request(self.single_server, "rangeFormatting", RangeFormatting, start, end, *args, **kwargs)
+
+    def try_code_action(self, *args, **kwargs):
+        self.code_action_counter = 0
+
+        if self.multi_servers:
+            for lsp_server in self.multi_servers.values():
+                if lsp_server.server_info["name"] in self.get_method_server_names("code_action"):
+                    self.send_code_action_request(lsp_server, *args, **kwargs)
+        else:
+            self.send_code_action_request(self.single_server, *args, **kwargs)
 
     def change_cursor(self, position):
         # Record change cursor time.
         self.last_change_cursor_time = time.time()
 
-    def ignore_diagnostic(self):
-        lsp_server = self.get_match_lsp_servers("completion")[0]
-        if "ignore-diagnostic" in lsp_server.server_info:
-            eval_in_emacs("lsp-bridge-diagnostic--ignore", lsp_server.server_info["ignore-diagnostic"])
-        else:
-            message_emacs("Not found 'ignore_diagnostic' field in LSP server configure file.")
+    def get_diagnostics_count(self):
+        return sum(len(diags) for diags in self.diagnostics.values())
 
-    def get_diagnostics(self):
+    def get_diagnostics(self, hide_severities=None):
         diagnostics = []
         diagnostic_count = 0
         for server_name in self.diagnostics:
             for diagnostic in self.diagnostics[server_name]:
+                if hide_severities and diagnostic.get("severity", 1) in hide_severities:
+                    continue
                 diagnostic["server-name"] = server_name
                 diagnostics.append(diagnostic)
 
@@ -248,7 +357,7 @@ class FileAction:
 
         return diagnostics
 
-    def list_diagnostics(self):
+    def list_diagnostics(self, hide_severities):
         diagnostic_count = 0
         for server_name in self.diagnostics:
             diagnostic_count += len(self.diagnostics[server_name])
@@ -256,7 +365,7 @@ class FileAction:
         if diagnostic_count == 0:
             message_emacs("No diagnostics found.")
         else:
-            eval_in_emacs("lsp-bridge-diagnostic--list", self.get_diagnostics())
+            eval_in_emacs("lsp-bridge-diagnostic--list", self.get_diagnostics(hide_severities))
 
     def sort_diagnostic(self, diagnostic_a, diagnostic_b):
         score_a = [diagnostic_a["range"]["start"]["line"],
@@ -281,26 +390,43 @@ class FileAction:
         # Record diagnostics data that push from LSP server.
         import functools
         self.diagnostics[server_name] = sorted(diagnostics, key=functools.cmp_to_key(self.sort_diagnostic))
-        self.diagnostics_ticker += 1
+
+        if server_name in self.diagnostics_ticker:
+            self.diagnostics_ticker[server_name] += 1
+        else:
+            self.diagnostics_ticker[server_name] = 0
 
         # Try to push diagnostics to Emacs.
         if self.enable_push_diagnostics:
-            push_diagnostic_ticker = self.diagnostics_ticker
-            push_diagnostic_timer = threading.Timer(self.push_diagnostic_idle, lambda : self.try_push_diagnostics(push_diagnostic_ticker))
+            push_diagnostic_ticker = self.diagnostics_ticker[server_name]
+            push_diagnostic_timer = threading.Timer(
+                self.push_diagnostic_idle,
+                lambda : self.try_push_diagnostics(push_diagnostic_ticker, server_name))
             push_diagnostic_timer.start()
 
-    def try_push_diagnostics(self, ticker):
+    def try_push_diagnostics(self, ticker, server_name):
         # Only push diagnostics to Emacs when ticker is newest.
         # Drop all temporarily diagnostics when typing.
-        if ticker == self.diagnostics_ticker:
-            eval_in_emacs("lsp-bridge-diagnostic--render", self.filepath, get_lsp_file_host(), self.get_diagnostics())
+        #
+        # Note:
+        # We need to check diagnostics ticker separately based on LSP server name,
+        # to avoid multiple LSP server conflict each other.
+        if ticker == self.diagnostics_ticker[server_name]:
+            eval_in_emacs("lsp-bridge-diagnostic--render",
+                          self.filepath,
+                          get_lsp_file_host(),
+                          self.get_diagnostics(),
+                          self.get_diagnostics_count())
+
+    def record_dart_closing_lables(self, labels):
+        eval_in_emacs("lsp-bridge-dart-closing-labels--render", self.filepath, get_lsp_file_host(), labels)
 
     def push_code_actions(self, actions, server_name, action_kind):
         log_time("Record actions from '{}' for file {}".format(server_name, os.path.basename(self.filepath)))
         self.code_actions[server_name] = actions
 
         self.code_action_counter += 1
-        check_counter = len(self.multi_servers_info.get("code_action", [])) if self.multi_servers else 1
+        check_counter = len(self.get_method_server_names("code_action")) if self.multi_servers else 1
 
         # Only send code action when all LSP server has received response.
         if self.code_action_counter >= check_counter:
@@ -308,37 +434,39 @@ class FileAction:
 
             code_actions = self.get_code_actions()
             if len(code_actions) > 0:
-                eval_in_emacs("lsp-bridge-code-action--fix", self.get_code_actions(), action_kind)
+                eval_in_emacs("lsp-bridge-code-action--fix", code_actions, action_kind)
+            elif self.get_diagnostics_count() > 0:
+                message_emacs("Please move cursor to error or warning, then execute 'lsp-bridge-code-action' again.")
             else:
-                message_emacs("No code actions here")
+                message_emacs("Fantastic, your code looks great! No further actions needed!")
 
     def get_code_actions(self):
         code_actions = []
         for server_name in self.code_actions:
-            for code_action in self.code_actions[server_name]:
-                code_action["server-name"] = server_name
-                code_actions.append(code_action)
+            if self.code_actions[server_name] is not None:
+                for code_action in self.code_actions[server_name]:
+                    code_action["server-name"] = server_name
+                    code_actions.append(code_action)
 
         return code_actions
 
-    def try_code_action(self, range_start, range_end, action_kind):
-        self.code_action_counter = 0
-
-        if self.multi_servers:
-            for lsp_server in self.multi_servers.values():
-                if lsp_server.server_info["name"] in self.multi_servers_info["code_action"]:
-                    self.send_code_action_request(lsp_server, range_start, range_end, action_kind)
-        else:
-            self.send_code_action_request(self.single_server, range_start, range_end, action_kind)
-
     def send_code_action_request(self, lsp_server, range_start, range_end, action_kind):
         lsp_server_name = lsp_server.server_info["name"]
-        self.send_server_request(
-            lsp_server,
-            "code_action",
-            lsp_server_name,
-            self.diagnostics[lsp_server_name] if lsp_server_name in self.diagnostics else [],
-            range_start, range_end, action_kind)
+
+        diagnostics = []
+        if lsp_server_name in self.diagnostics:
+            for diagnostic in self.diagnostics[lsp_server_name]:
+                if "range" in diagnostic and not (
+                    diagnostic["range"]["start"]["line"] >= range_start["line"]
+                    and diagnostic["range"]["end"]["line"] <= range_end["line"]
+                ):
+                    continue
+                diagnostics.append(diagnostic)
+
+        self.send_request(
+            lsp_server, "code_action", CodeAction,
+            lsp_server_name, diagnostics, range_start, range_end, action_kind
+        )
 
     def save_file(self, buffer_name):
         for lsp_server in self.get_lsp_servers():
@@ -356,7 +484,11 @@ class FileAction:
                     method_server = self.single_server
 
                 if method_server.completion_resolve_provider:
-                    self.send_server_request(method_server, "completion_item_resolve", item_key, server_name, self.completion_items[server_name][item_key])
+                    self.send_server_request(method_server,
+                                             "completion_item_resolve",
+                                             item_key,
+                                             server_name,
+                                             self.completion_items[server_name][item_key])
                 else:
                     item = self.completion_items[server_name][item_key]
 
@@ -371,7 +503,7 @@ class FileAction:
 
     def completion_item_update(self, item_key, server_name, documentation, additional_text_edits):
         if self.completion_item_resolve_key == item_key:
-           if type(documentation) == dict:
+           if isinstance(documentation, dict):
                if "kind" in documentation:
                    documentation = documentation["value"]
 
@@ -383,8 +515,7 @@ class FileAction:
                              "additionalTextEdits": additional_text_edits,
                              "documentation": documentation
                          },
-                         get_lsp_file_host()
-                         )
+                         get_lsp_file_host())
 
 
     def rename_file(self, old_filepath, new_filepath):
@@ -395,6 +526,7 @@ class FileAction:
 
         handler.latest_request_id = request_id = generate_request_id()
         handler.last_change = self.last_change
+        handler.server_info = lsp_server.server_info
 
         lsp_server.record_request_id(request_id, handler)
 
@@ -427,10 +559,7 @@ class FileAction:
 
     def get_match_lsp_servers(self, method):
         if self.multi_servers:
-            server_names = self.multi_servers_info[method]    # type: ignore
-            if type(server_names) == str:
-                server_names = [server_names]
-
+            server_names = self.get_method_server_names(method)    # type: ignore
             return list(map(lambda server_name: self.multi_servers[server_name], server_names))    # type: ignore
         else:
             return [self.single_server]

@@ -1,4 +1,4 @@
-;;; acm-backend-elisp.el --- Elisp backend for acm  -*- lexical-binding: t -*-
+;;; acm-backend-elisp.el --- Elisp backend for acm  -*- lexical-binding: t; no-byte-compile: t; -*-
 
 ;; Filename: acm-backend-elisp.el
 ;; Description: Elisp backend for acm
@@ -111,18 +111,18 @@
 (defvar acm-backend-elisp-symbols-update-size 0)
 
 (defun acm-backend-elisp-candidates (keyword)
-  (when (and (acm-is-elisp-mode-p)
-             (>= (length keyword) acm-backend-elisp-candidate-min-length))
-    (mapcar
-     (lambda (elisp-symbol)
-       (let ((symbol-type (acm-backend-elisp-symbol-type (intern elisp-symbol))))
-         (list :key elisp-symbol
-               :icon symbol-type
-               :label elisp-symbol
-               :display-label elisp-symbol
-               :annotation (capitalize symbol-type)
-               :backend "elisp")))
-     acm-backend-elisp-items)))
+  (acm-with-cache-candidates
+   acm-backend-elisp-cache-candiates
+   (mapcar
+    (lambda (elisp-symbol)
+      (let ((symbol-type (acm-backend-elisp-symbol-type (intern elisp-symbol))))
+        (list :key elisp-symbol
+              :icon symbol-type
+              :label elisp-symbol
+              :displayLabel elisp-symbol
+              :annotation (capitalize symbol-type)
+              :backend "elisp")))
+    acm-backend-elisp-items)))
 
 (defun acm-backend-elisp-candidate-doc (candidate)
   (let* ((symbol (intern (plist-get candidate :label)))
@@ -220,6 +220,10 @@
 (defun acm-backend-elisp-get-symbols ()
   (append (acm-backend-elisp-local-symbols)
           (acm-backend-elisp-global-symbols)))
+
+(defun acm-backend-elisp-clean ()
+  (setq-local acm-backend-elisp-items nil)
+  (setq-local acm-backend-elisp-cache-candiates nil))
 
 (provide 'acm-backend-elisp)
 

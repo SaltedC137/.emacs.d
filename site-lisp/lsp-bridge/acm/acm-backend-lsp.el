@@ -1,4 +1,4 @@
-;;; acm-backend-lsp.el --- LSP backend for acm  -*- lexical-binding: t -*-
+;;; acm-backend-lsp.el --- LSP backend for acm  -*- lexical-binding: t; no-byte-compile: t; -*-
 
 ;; Filename: acm-backend-lsp.el
 ;; Description: LSP backend for acm
@@ -108,29 +108,116 @@
   :type 'boolean
   :group 'acm-backend-lsp)
 
+(defcustom acm-backend-lsp-match-mode "fuzzy"
+  "The match mode to filter completion candidates.
+
+`prefix': filter candidates with input prefix, note such as C++, after `std::', candidate's prefix is not `::'. For input \"abc\", it will match \"^abc.*\"
+`prefixCaseSensitive': filter candidates with input prefix, and case sensitive
+`fuzzy': fitler candidates with fuzzy algorithm. For input \"abc\", it will match \".*a.*b.*c.*\".
+`substring': filter candidates which treated the input as a literal string that must occur in the candidate. For input \"abc\", it will match \".*abc.*\"
+
+lsp-bridge still will use `fuzzy' algorithm filter candidates if value is not `prefix' `prefixCaseSensitive' `substring' or `fuzzy'.
+
+The lsp-bridge will continuously filter candidates on the Python side.
+If not filter and the value of `acm-backend-lsp-candidates-max-number' is far smaller than the number of candidates returned by the LSP server,
+it will cause the lsp-bridge to always send the previous batch of candidates which do not match the users input."
+  :type '(choice (const :tag "Fuzzy Match" "fuzzy")
+                 (const :tag "Prefix Match" "prefix")
+                 (const :tag "Prefix Match with Case Sensitive" "prefixCaseSensitive")
+                 (const :tag "Substring Match" "substring")
+                 (other :tag "For compatibility, you can use any string. It will fall back to fuzzy match" string))
+  :group 'acm-backend-lsp)
+
+(defcustom acm-backend-lsp-case-mode "ignore"
+  "The case sensitive mode to filter completion candidates.
+
+`ignore': filter case insensitively
+`sensitive': filter case sensitively
+`smart': filter case sensitively if any cased characters in the input is uppercase. Otherwise, filter case sensitively
+
+Cased characters are those with general category property being one of “Lu” (Letter, uppercase), “Ll” (Letter, lowercase), or “Lt” (Letter, titlecase)."
+  :type '(choice (const :tag "Ignore Case" "ignore")
+                 (const :tag "Smart Case" "smart")
+                 (const :tag "Case Sensitive" "sensitive"))
+  :group 'acm-backend-lsp)
+
+(defcustom acm-backend-lsp-frontend-filter-p nil
+  "Because LSP candidates has filtered at Python backend.
+
+So don't need filter candidates again when show candidates in acm menu.
+
+Anyway, if want use `acm-candidate-fuzzy-search' filter again in acm menu, turn on this option."
+  :type 'string
+  :group 'acm-backend-lsp)
+
+(defcustom acm-backend-lsp-show-progress nil
+  "Show message from 'Work Done Progress' message.
+
+Default is nil."
+  :type 'boolean
+  :group 'acm-backend-lsp)
+
+
 (defvar acm-backend-lsp-fetch-completion-item-func nil)
 (defvar-local acm-backend-lsp-fetch-completion-item-ticker nil)
 
-(defun acm-backend-lsp-candidates (keyword)
-  (let* ((candidates (list)))
-    (when (and
-           (>= (length keyword) acm-backend-lsp-candidate-min-length)
-           (boundp 'acm-backend-lsp-items)
-           acm-backend-lsp-items
-           (boundp 'acm-backend-lsp-server-names)
-           acm-backend-lsp-server-names
-           (hash-table-p acm-backend-lsp-items))
-      ;; Sort multi-server items by
-      (dolist (server-name acm-backend-lsp-server-names)
-        (when-let* ((server-items (gethash server-name acm-backend-lsp-items)))
-          (maphash (lambda (k v)
-                     (add-to-list 'candidates v t))
-                   server-items))))
+(defvar-local acm-backend-lsp-block-kind-list nil
+  "You can customize this option to filter certain types of completion candidates.
 
-    ;; NOTE:
-    ;; lsp-bridge has sort candidate at Python side,
-    ;; please do not do secondary sorting here, elisp is very slow.
-    candidates))
+This variable is a list type.
+
+Below is available types:
+
+`Text' `Method' `Function' `Constructor' `Field'
+`Variable' `Class' `Interface' `Module' `Property'
+`Unit' `Value' `Enum' `Keyword' `Snippet' `Color'
+`File' `Reference' `Folder' `EnumMember' `Constant'
+`Struct' `Event' `Operator' `TypeParameter'
+")
+
+(defun acm-backend-lsp-init ()
+  (setq-local acm-backend-lsp-server-command-exist t)
+  (setq-local acm-backend-lsp-cache-candidates nil)
+  (setq-local acm-backend-lsp-completion-position nil)
+  (setq-local acm-backend-lsp-completion-trigger-characters nil)
+  (setq-local acm-backend-lsp-server-names nil)
+  (setq-local acm-backend-lsp-filepath (lsp-bridge-get-buffer-truename))
+  (setq-local acm-backend-lsp-items (make-hash-table :test 'equal)))
+
+(defun acm-backend-lsp-candidates (keyword)
+  (let ((match-candidates
+         (acm-with-cache-candidates
+          acm-backend-lsp-cache-candidates
+          (let* ((candidates (list)))
+            (when (and
+                   (>= (length keyword) acm-backend-lsp-candidate-min-length)
+                   (boundp 'acm-backend-lsp-items)
+                   acm-backend-lsp-items
+                   (boundp 'acm-backend-lsp-server-names)
+                   acm-backend-lsp-server-names
+                   (hash-table-p acm-backend-lsp-items))
+              (dolist (server-name acm-backend-lsp-server-names)
+                (when-let* ((server-items (gethash server-name acm-backend-lsp-items)))
+                  (maphash (lambda (k v)
+                             (add-to-list 'candidates v t))
+                           server-items))))
+
+            ;; NOTE:
+            ;; lsp-bridge has sort candidate at Python side,
+            ;; please do not do secondary sorting here, elisp is very slow.
+            candidates))))
+
+    ;; Show candidates
+    (cond
+     ;; Don't filter candidates is prefix is empty.
+     ((string-equal keyword "")
+      match-candidates)
+     ;; Fitler candidates when `acm-backend-lsp-frontend-filter-p' is non-nil.
+     (acm-backend-lsp-frontend-filter-p
+      (seq-filter (lambda (c) (acm-candidate-fuzzy-search keyword (plist-get c :label))) match-candidates))
+     ;; Don't filter candidates default, because LSP candidates has filtered at Python backend.
+     (t
+      match-candidates))))
 
 (defun acm-backend-lsp-candidate-expand (candidate-info bound-start &optional preview)
   (let* ((label (plist-get candidate-info :label))
@@ -185,6 +272,13 @@
       ;; Insert candidate or expand snippet.
       (funcall (or snippet-fn #'insert)
                (or new-text insert-text label))
+      ;; Indent last line of snippet, make sure it same as first line of snippet.
+      (when snippet-fn
+        (save-excursion
+          (when yas-snippet-end
+            (goto-char yas-snippet-end)
+            (goto-char (line-beginning-position))
+            (indent-according-to-mode))))
       ;; Do `additional-text-edits' if return auto-imprt information.
       (when (and acm-backend-lsp-enable-auto-import
                  (cl-plusp (length additional-text-edits)))
@@ -266,7 +360,8 @@ Doubles as an indicator of snippet support."
       (insert new-text))))
 
 (defun acm-backend-lsp-clean ()
-  (setq-local acm-backend-lsp-items (make-hash-table :test 'equal)))
+  (setq-local acm-backend-lsp-items (make-hash-table :test 'equal))
+  (setq-local acm-backend-lsp-cache-candidates nil))
 
 (provide 'acm-backend-lsp)
 

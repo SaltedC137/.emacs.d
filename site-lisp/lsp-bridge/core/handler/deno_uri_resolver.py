@@ -1,6 +1,6 @@
-import os
 
 from core.handler import Handler
+from core.handler.find_define_base import create_decompile_external_file
 from core.utils import *
 
 
@@ -15,16 +15,18 @@ class DenoUriResolver(Handler):
         self.external_file_link = ""
         self.start_pos = None
 
-    def process_request(self, uri, start_pos) -> dict:
+    def process_request(self, uri, start_pos, define_jump_handler) -> dict:
         self.start_pos = start_pos
         self.external_file_link = uri
+        self.define_jump_handler = define_jump_handler
         return dict(textDocument={"uri": uri})
 
     def process_response(self, response):
         if response is not None:
-            import tempfile
-            deno_virtual_text_document_path = os.path.join(tempfile.gettempdir(), self.external_file_link.split("/")[-1])
-            with open(deno_virtual_text_document_path, "w") as f:
-                f.write(response)    # type: ignore
-                
-            eval_in_emacs("lsp-bridge-define--jump", deno_virtual_text_document_path, get_lsp_file_host(), self.start_pos)
+            external_file = create_decompile_external_file(
+                self,
+                "lsp-bridge-deno",
+                "deno-uri-resolver",
+                response)
+
+            eval_in_emacs(self.define_jump_handler, external_file, get_lsp_file_host(), self.start_pos)

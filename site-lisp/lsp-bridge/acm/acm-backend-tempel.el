@@ -1,4 +1,4 @@
-;;; acm-backend-tempel.el -*- lexical-binding: t -*-
+;;; acm-backend-tempel.el -*- lexical-binding: t; no-byte-compile: t; -*-
 
 (defgroup acm-backend-tempel nil
   "Tempel backend for acm."
@@ -16,8 +16,12 @@
 
 (defun acm-backend-tempel-candidates (keyword)
   (when (and acm-enable-tempel
-             (featurep 'tempel))
-    (let* ((snippets (cl-loop for template in (tempel--templates)
+             (featurep 'tempel)
+             (or (not tempel-trigger-prefix) (string-prefix-p tempel-trigger-prefix keyword)))
+    (let* ((keyword (if tempel-trigger-prefix
+                        (string-remove-prefix tempel-trigger-prefix keyword)
+                      keyword))
+           (snippets (cl-loop for template in (tempel--templates)
                               collect (format "%s" (car template))))
            (match-snippets (seq-filter (lambda (s) (acm-candidate-fuzzy-search keyword s)) snippets)))
       (acm-candidate-sort-by-prefix
@@ -27,11 +31,10 @@
           (list :key snippet
                 :icon "snippet"
                 :label snippet
-                :display-label snippet
+                :displayLabel snippet
                 :annotation "Tempel"
                 :backend "tempel"))
-        (cl-subseq match-snippets 0 (min (length match-snippets) acm-backend-tempel-candidates-number)))
-       candidates))))
+        (cl-subseq match-snippets 0 (min (length match-snippets) acm-backend-tempel-candidates-number)))))))
 
 (defun acm-backend-tempel-candidate-expand (candidate-info bound-start)
   (delete-region bound-start (point))
@@ -41,7 +44,7 @@
   (let ((snippet
          (alist-get (intern-soft (plist-get candidate :label))
                     (tempel--templates))))
-    (mapconcat #'tempel--print-element snippet " ")))
+    (mapconcat #'tempel--print-template snippet " ")))
 
 (provide 'acm-backend-tempel)
 
