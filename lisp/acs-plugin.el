@@ -12,6 +12,10 @@
 (global-lsp-bridge-mode)
 (setq lsp-bridge-enable-diagnostics t)
 
+
+
+
+
 (provide 'acs-plugin)
 
 ;; Local Variables:

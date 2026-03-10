@@ -54,6 +54,10 @@
 (keymap-global-set "C-c m s" #'magit-status)
 (keymap-global-set "C-c m l" #'magit-log)
 
+;; Delete Line
+
+(keymap-global-set "C-x l" #'kill-whole-line)
+
 (provide 'acs-key)
 
 ;; Local Variables:

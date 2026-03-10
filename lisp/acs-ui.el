@@ -220,7 +220,7 @@
 
 ;;; Tab Line Configuration with Icons
 
-
+(setq tab-line-mode -1)
 
 ;;; Window:
 
@@ -406,10 +406,7 @@
 ;; TUI 下, 尽可能地 使 cursor 外形或特征 更加显著.
 (setopt visible-cursor t)
 
-;; 
-
-
-
+;;menu
 
 
 
