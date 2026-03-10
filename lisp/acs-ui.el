@@ -261,6 +261,22 @@
 (setopt tab-line-tab-name-function #'acs/tab-line-name-buffer)
 
 
+
+;; (custom-set-faces
+;;  '(tab-line
+;;    ((t (:inherit mode-line-inactive :background "black" :height 1.0 :box nil))))
+;;  '(tab-line-tab
+;;    ((t (:inherit tab-line :background "gray20" :foreground "gray70" :box (:line-width 1 :color "gray20")))))
+;;  '(tab-line-tab-inactive
+;;    ((t (:inherit tab-line-tab))))
+;;  '(tab-line-tab-current
+;;    ((t (:background "SlateBlue4" :foreground "white" :weight bold :box (:line-width 1 :color "SlateBlue4")))))
+;;  '(tab-line-highlight
+;;    ((t (:background "dark slate gray" :foreground "white")))))
+
+
+
+
 (global-tab-line-mode t)
 
 ;;; Window:
