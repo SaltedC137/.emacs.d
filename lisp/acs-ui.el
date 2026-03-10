@@ -206,6 +206,7 @@
 (keymap-global-unset "<menu-bar> <help-menu> <getting-new-versions>")
 (keymap-global-unset "<menu-bar> <help-menu> <more-manuals> <order-emacs-manuals>")
 
+(menu-bar-mode nil)
 ;;; Tool Bar:
 
 (setq tool-bar-style 'both)
