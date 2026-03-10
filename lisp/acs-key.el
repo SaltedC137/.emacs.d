@@ -25,6 +25,32 @@
 
 (global-set-key (kbd "C-x p d") 'rc/insert-timestamp)
 
+;; tab width
+
+
+(setq tab-width 4
+      indent-tabs-mode nil
+      standard-indent 4)
+
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+(dolist (mode '(python-mode-hook
+                c-mode-hook
+                c++-mode-hook
+                java-mode-hook
+                javascript-mode-hook
+                web-mode-hook
+                yaml-mode-hook
+                ruby-mode-hook
+                go-mode-hook
+                rust-mode-hook))
+  (add-hook mode (lambda ()
+                   (setq tab-width 4
+                         indent-tabs-mode nil
+                         standard-indent 4))))
+
 ;; editor keyset
 
 (keymap-global-set "C-=" #'text-scale-increase)
