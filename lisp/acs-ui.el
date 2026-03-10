@@ -240,7 +240,7 @@
      (t
       (format "%s" mode-name)))))
 
-(setopt tab-line-tabs-function #'acs/tab-line-buffer-group)
+(setopt tab-line-tabs-buffer-group-function #'acs/tab-line-buffer-group)
 
 
 (defun acs/tab-line-name-buffer (buffer &optional _buffers)
@@ -250,8 +250,8 @@
 			(display-graphic-p))
 		   (with-current-buffer buffer
 		     (cond
-		      ((derived-mode-p 'eshell-mode) (nerd-icons-codicon "nf-cod-termial"))
-		      ((derived-mode-p 'magit-mode) (nerd-icons-codicon "nf-oct-git_merge"))
+		      ((derived-mode-p 'eshell-mode) (nerd-icons-codicon "nf-cod-terminal"))
+		      ((derived-mode-p 'magit-mode) (nerd-icons-octicon "nf-oct-git_merge"))
 		      (t (nerd-icons-icon-for-buffer buffer))))
 		 "")))
     (if (string-empty-p icon)
