@@ -51,6 +51,21 @@
                          indent-tabs-mode nil
                          standard-indent 4))))
 
+;; backtab
+
+(defun my/backtab-unindent ()
+  "当前行或选中区域向左缩进一个 tab-width 宽度"
+  (interactive)
+  (if (use-region-p)
+      (indent-rigidly-left (region-beginning) (region-end) tab-width)
+    (save-excursion
+      (beginning-of-line)
+      (indent-rigidly-left (point) (line-end-position) tab-width))))
+
+
+(global-set-key [backtab] 'my/backtab-unindent)
+
+
 ;; editor keyset
 
 (keymap-global-set "C-=" #'text-scale-increase)
