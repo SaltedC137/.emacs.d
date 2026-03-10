@@ -258,11 +258,10 @@
 	(format " %s " name)
       (format " %s %s " icon name))))
 
-(setopt tab-line-tab-name-function #acs/tab-line-name-buffer)
+(setopt tab-line-tab-name-function #'acs/tab-line-name-buffer)
 
 
-
-
+(global-tab-line-mode t)
 
 ;;; Window:
 

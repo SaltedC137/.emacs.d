@@ -36,6 +36,7 @@
   (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-header-line-height 15)
   (setq
    dirvish-attributes ; The order *MATTERS* for some attributes
    '(vc-state subtree-state
