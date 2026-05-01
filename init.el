@@ -27,6 +27,17 @@
 ;; (defconst *is-linux* (eq system-type 'gnu/linux) "GNU/Linux platform.")
 ;; (defconst *is-windows* (memq system-type '(cygwin windows-nt ms-dos)) "Windows / DOS.")
 
+;; Load theme immediately after package initialization to avoid flicker
+(require 'package)
+(setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
+(package-initialize)
+
+(when (package-installed-p 'doom-themes)
+  (require 'doom-themes)
+  (load-theme 'doom-one t)
+  (setq doom-themes-enable-italic t
+        doom-themes-enable-bold t))
+
 ;; settings for independent packages and etc.
 (let ((load-prefer-newer t))
   (require 'init-fn)

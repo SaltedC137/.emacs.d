@@ -6,7 +6,7 @@
 (defun rc/duplicate-line ()
   "Duplicate current line"
   (interactive)
-  (let ((column (- (point) (point-at-bol)))
+  (let ((column (- (point) (pos-bol)))
         (line (let ((s (thing-at-point 'line t)))
                 (if s (string-remove-suffix "\n" s) ""))))
     (move-end-of-line 1)
@@ -64,6 +64,9 @@
       (ansi-color-apply-on-region (point-min) (point-max)))))
 
 (add-hook 'compilation-filter-hook 'rc/colorize-compilation-buffer)
+
+
+(setq gdb-many-windows t)
 
 (provide 'init-fn)
 ;;;

@@ -29,7 +29,7 @@
 ;; this maybe useful, if you want to update all the packages with command, just like me
 (use-package auto-package-update
   :init (setq auto-package-update-delete-old-versions t
-	          auto-package-update-hide-results t))
+	            auto-package-update-hide-results t))
 
 ;; Settings for company
 (use-package company
@@ -97,20 +97,13 @@
 (use-package highlight-parentheses
   :init (add-hook 'prog-mode-hook 'highlight-parentheses-mode))
 
-;; Beautiful themes
+;; Beautiful themes (theme loading moved to init.el to avoid flicker)
 (use-package doom-themes
   :defer t
-  :init
-  (cabins/defer-startup
-   0.2
-   (lambda ()
-     (require 'doom-themes)
-     (load-theme 'doom-one t)
-     (setq doom-themes-enable-italic t
-           doom-themes-enable-bold t)
-     (doom-themes-visual-bell-config)
-     (doom-themes-neotree-config)
-     (doom-themes-org-config))))
+  :config
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config))
 
 ;; Settings for which-key - suggest next key
 (use-package which-key
@@ -154,17 +147,18 @@
   (copilot-indent-offset-warning-disable t)
   :bind (("C-c o" . copilot-mode)
          :map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-<tab>" . copilot-accept-completion-by-word)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-n" . copilot-next-completion)
-              ("C-p" . copilot-previous-completion)))
+         ("<tab>" . copilot-accept-completion)
+         ("TAB" . copilot-accept-completion)
+         ("C-<tab>" . copilot-accept-completion-by-word)
+         ("C-TAB" . copilot-accept-completion-by-word)
+         ("C-n" . copilot-next-completion)
+         ("C-p" . copilot-previous-completion)))
 
 ;; highlight-indent-guides
 (use-package diredfl
   :hook (dired-mode . diredfl-mode))
 (add-hook 'dired-mode-hook 'hl-line-mode)
+
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)

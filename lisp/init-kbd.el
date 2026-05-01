@@ -82,11 +82,56 @@
 (global-set-key (kbd "C-c e h") #'eldoc-doc-buffer)
 
 ;; Custom Utils
-(global-set-key (kbd "C-,") #'rc/duplicate-line)        ; 复制当前行
-(global-set-key (kbd "C-x p d") #'rc/insert-timestamp)  ; 插入时间戳
-(global-set-key (kbd "C-x p s") #'rc/rgrep-selected)    ; 搜索选中内容
-(global-set-key (kbd "C-c M-q") #'rc/unfill-paragraph)  ; 段落转单行
-(global-set-key (kbd "C-c X") #'bf-pretty-print-xml-region) ; XML格式化
+(global-set-key (kbd "C-,") #'rc/duplicate-line)
+(global-set-key (kbd "C-x p d") #'rc/insert-timestamp)
+(global-set-key (kbd "C-x p s") #'rc/rgrep-selected)
+(global-set-key (kbd "C-c M-q") #'rc/unfill-paragraph)
+(global-set-key (kbd "C-c X") #'bf-pretty-print-xml-region)
+
+;;; GDB Debugging Keys (VSCode style with Fn keys) -------
+;; F5: start gdb or continue
+(global-set-key (kbd "<f5>") (lambda () (interactive)
+  (if (get-buffer "*gud*")
+      (with-current-buffer "*gud*"
+        (comint-send-input))
+    (call-interactively 'gdb))))
+
+;; F9: toggle breakpoint
+(global-set-key (kbd "<f9>") (lambda () (interactive)
+  (with-current-buffer (or gud-comint-buffer (current-buffer))
+    (gud-call "break %f:%l" nil))))
+
+;; F10: Step over (next)
+(global-set-key (kbd "<f10>") (lambda () (interactive)
+  (with-current-buffer (or gud-comint-buffer (current-buffer))
+    (gud-call "next" nil))))
+
+;; F11: Step into
+(global-set-key (kbd "<f11>") (lambda () (interactive)
+  (with-current-buffer (or gud-comint-buffer (current-buffer))
+    (gud-call "step" nil))))
+
+;; Shift+F11: Step out (finish)
+(global-set-key (kbd "<S-f11>") (lambda () (interactive)
+  (with-current-buffer (or gud-comint-buffer (current-buffer))
+    (gud-call "finish" nil))))
+
+;; Ctrl+F5: Continue execution
+(global-set-key (kbd "<C-f5>") (lambda () (interactive)
+  (with-current-buffer (or gud-comint-buffer (current-buffer))
+    (gud-call "continue" nil))))
+
+;; F8: Start GDB
+(global-set-key (kbd "<f8>") 'gdb)
+
+;; Ctrl+Shift+F5: Quit GDB and close window
+(global-set-key (kbd "<C-S-f5>") (lambda () (interactive)
+  (if (get-buffer "*gud*")
+      (with-current-buffer "*gud*"
+        (gud-call "quit" nil)
+        (sleep-for 0.5)
+        (kill-buffer "*gud*")
+        (delete-other-windows)))))
 
 (provide 'init-kbd)
 
