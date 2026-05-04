@@ -33,6 +33,12 @@
 ;;; Emacs Basic Keys ------------------------------
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+(require 'ido)
+(ido-mode t)
+(require 'smex)
+(global-set-key (kbd "M-x") 'smex) ; Enhanced M-x
+
+
 (global-set-key (kbd "C-c ,") #'crux-find-user-init-file)	; Open Settings
 (global-set-key (kbd "C-c l") (lambda () (interactive) (load-file user-init-file))) ; Reload Settings
 (global-set-key (kbd "C-c r") 'recentf-open-files) ; Open Recent Files

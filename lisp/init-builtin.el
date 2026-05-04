@@ -70,15 +70,17 @@
 (setq-default ido-auto-merge-work-directories-length -1
 	          ido-enable-flex-matching t
 	          isearch-lazy-count t
-	          lazy-count-prefix-format "%s/%s: ")
+	          laz2y-count-prefix-format "%s/%s: ")
 (setq completion-ignored-extensions '(".o" ".elc" "~" ".bin" ".bak" ".obj" ".map" ".a" ".ln" ".class"))
 (fido-mode t)
 
 ;; Line Number
-;; this package introduced in Emacs 26, so only enabled when 26+
+;; Display line numbers globally in all buffers (Emacs 26+)
 (use-package display-line-numbers
   :if (> emacs-major-version 26)
-  :hook (prog-mode . display-line-numbers-mode))
+  :init (global-display-line-numbers-mode 1)
+  :custom (display-line-numbers-type 'relative)
+  :hook ((text-mode prog-mode conf-mode) . display-line-numbers-mode))
 
 ;; Org Mode
 (setq org-hide-leading-stars t

@@ -15,7 +15,7 @@
 (defun cabins/defer-startup (delay fn)
   "Run FN DELAY seconds after Emacs becomes idle post startup."
   (add-hook 'after-init-hook
-            (lambda ()
+           (lambda ()
               (run-with-idle-timer delay nil fn))))
 
 ;; All the icons
@@ -97,13 +97,6 @@
 (use-package highlight-parentheses
   :init (add-hook 'prog-mode-hook 'highlight-parentheses-mode))
 
-;; Beautiful themes (theme loading moved to init.el to avoid flicker)
-(use-package doom-themes
-  :defer t
-  :config
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
-  (doom-themes-org-config))
 
 ;; Settings for which-key - suggest next key
 (use-package which-key
@@ -121,8 +114,6 @@
 ;; cmake for lsp
 (use-package cmake-mode
   :ensure t)
-
-
 
 ;; org-download
 

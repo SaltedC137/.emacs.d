@@ -35,7 +35,7 @@
   (rgrep (buffer-substring-no-properties beg end) "*" (pwd)))
 
 
-(defconst rc/frame-transparency 85)
+(defconst rc/frame-transparency 75)
 (defun rc/toggle-transparency ()
   (interactive)
   (let ((frame-alpha (frame-parameter nil 'alpha)))
@@ -46,7 +46,7 @@
                                ,rc/frame-transparency))
       (set-frame-parameter nil 'alpha '(100 100)))))
 
-;; 格式化 XML
+;; format xml in region
 (defun bf-pretty-print-xml-region (begin end)
   (interactive "r")
   (save-excursion
@@ -57,7 +57,7 @@
     (indent-region begin end))
   (message "Ah, much better!"))
 
-;; 编译输出染色
+;; colorize compilation buffer
 (defun rc/colorize-compilation-buffer ()
   (when (derived-mode-p 'compilation-mode)
     (let ((inhibit-read-only t))
@@ -67,6 +67,21 @@
 
 
 (setq gdb-many-windows t)
+
+;; astyle-buffer
+
+(defun astyle-buffer (&optional justify)
+  (interactive)
+  (let ((saved-line-number(line-number-at-pos)))
+    (shell-command-on-region
+     (point-min)(point-max)
+     "astyle --style=kr"
+     nil
+     t)
+    (goto-line saved-line-number)))
+
+
+
 
 (provide 'init-fn)
 ;;;

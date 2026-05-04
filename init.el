@@ -32,11 +32,8 @@
 (setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
 (package-initialize)
 
-(when (package-installed-p 'doom-themes)
-  (require 'doom-themes)
-  (load-theme 'doom-one t)
-  (setq doom-themes-enable-italic t
-        doom-themes-enable-bold t))
+(setq custom-safe-themes t)
+(load-theme 'monokai-pro)
 
 ;; settings for independent packages and etc.
 (let ((load-prefer-newer t))
