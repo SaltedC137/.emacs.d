@@ -1,14 +1,20 @@
 ;;; init-package.el --- initialize the plugins -*- lexical-binding: t -*-
 
-;; Author: Cabins
+;; Author: Cabins (revise by Aska lyn)
 ;; Maintainer: Cabins
 ;; Version: 1.0
 ;; Package-Requires: ()
-;; Homepage: https://github.com/cabins
+;; Homepage: https://github.com/SaltedC137
 ;; Keywords:
 
 ;;; Commentary:
-;; (c) Cabins Kong, 2020-2021
+;; (c) Sallyface, 2020-2021
+
+(use-package benchmark-init
+  :ensure t
+  :demand t
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;;; Code:
 
@@ -97,9 +103,9 @@
 (use-package highlight-parentheses
   :init (add-hook 'prog-mode-hook 'highlight-parentheses-mode))
 
-
 ;; Settings for which-key - suggest next key
 (use-package which-key
+  :ensure t
   :commands (which-key-mode)
   :diminish
   :init (cabins/defer-startup 1.2 #'which-key-mode))
@@ -149,6 +155,24 @@
 (use-package diredfl
   :hook (dired-mode . diredfl-mode))
 (add-hook 'dired-mode-hook 'hl-line-mode)
+
+
+;; modeline
+(use-package doom-modeline
+  :ensure t
+  :defer t
+  :init (doom-modeline-mode 1))
+
+
+;; icon
+(use-package nerd-icons
+  :ensure t)
+
+;; dashboard
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
 
 
 ;; Local Variables:

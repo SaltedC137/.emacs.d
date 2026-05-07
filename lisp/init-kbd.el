@@ -97,47 +97,50 @@
 ;;; GDB Debugging Keys (VSCode style with Fn keys) -------
 ;; F5: start gdb or continue
 (global-set-key (kbd "<f5>") (lambda () (interactive)
-  (if (get-buffer "*gud*")
-      (with-current-buffer "*gud*"
-        (comint-send-input))
-    (call-interactively 'gdb))))
+                               (if (get-buffer "*gud*")
+                                   (with-current-buffer "*gud*"
+                                     (comint-send-input))
+                                 (call-interactively 'gdb))))
 
 ;; F9: toggle breakpoint
 (global-set-key (kbd "<f9>") (lambda () (interactive)
-  (with-current-buffer (or gud-comint-buffer (current-buffer))
-    (gud-call "break %f:%l" nil))))
+                               (with-current-buffer (or gud-comint-buffer (current-buffer))
+                                 (gud-call "break %f:%l" nil))))
 
 ;; F10: Step over (next)
 (global-set-key (kbd "<f10>") (lambda () (interactive)
-  (with-current-buffer (or gud-comint-buffer (current-buffer))
-    (gud-call "next" nil))))
+                                (with-current-buffer (or gud-comint-buffer (current-buffer))
+                                  (gud-call "next" nil))))
 
 ;; F11: Step into
 (global-set-key (kbd "<f11>") (lambda () (interactive)
-  (with-current-buffer (or gud-comint-buffer (current-buffer))
-    (gud-call "step" nil))))
+                                (with-current-buffer (or gud-comint-buffer (current-buffer))
+                                  (gud-call "step" nil))))
 
 ;; Shift+F11: Step out (finish)
 (global-set-key (kbd "<S-f11>") (lambda () (interactive)
-  (with-current-buffer (or gud-comint-buffer (current-buffer))
-    (gud-call "finish" nil))))
+                                  (with-current-buffer (or gud-comint-buffer (current-buffer))
+                                    (gud-call "finish" nil))))
 
 ;; Ctrl+F5: Continue execution
 (global-set-key (kbd "<C-f5>") (lambda () (interactive)
-  (with-current-buffer (or gud-comint-buffer (current-buffer))
-    (gud-call "continue" nil))))
+                                 (with-current-buffer (or gud-comint-buffer (current-buffer))
+                                   (gud-call "continue" nil))))
+
+
+
 
 ;; F8: Start GDB
 (global-set-key (kbd "<f8>") 'gdb)
 
 ;; Ctrl+Shift+F5: Quit GDB and close window
 (global-set-key (kbd "<C-S-f5>") (lambda () (interactive)
-  (if (get-buffer "*gud*")
-      (with-current-buffer "*gud*"
-        (gud-call "quit" nil)
-        (sleep-for 0.5)
-        (kill-buffer "*gud*")
-        (delete-other-windows)))))
+                                   (if (get-buffer "*gud*")
+                                       (with-current-buffer "*gud*"
+                                         (gud-call "quit" nil)
+                                         (sleep-for 0.5)
+                                         (kill-buffer "*gud*")
+                                         (delete-other-windows)))))
 
 (provide 'init-kbd)
 

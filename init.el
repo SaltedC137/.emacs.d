@@ -8,11 +8,15 @@
 ;;; Commentary:
 ;; (c) Cabins Kong, 2020-2021
 
+
+;;benchmark
+
 ;;; Code:
 (setq default-directory "~/")
 
 ;; Update the load-path
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "lisp/")))
+
 
 ;; Settings for Emacs 28+
 (when (and (fboundp 'native-comp-available-p)
@@ -44,7 +48,8 @@
   (require 'init-builtin)
   (require 'init-ide)
   (require 'init-ui)
-  (require 'init-kbd))
+  (require 'init-kbd)
+  (require 'init-dash))
 
 ;; load custom file at last
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

@@ -54,6 +54,24 @@
                  (toggle-frame-maximized)
                  (cabins/setup-font))))))
 
+
+;; set mode-line
+
+(require 'time)
+(setopt display-time-format "%a-%b-%d %p %I:%M"
+        display-time-day-and-date ""
+        display-time-24hr-format nil)
+(display-time-mode)
+
+
+
+(setopt battery-mode-line-format "[%p%%] ")
+(setopt battery-update-interval 300)
+(display-battery-mode)
+
+
+
+
 (provide 'init-ui)
 
 ;;; init-ui.el ends here

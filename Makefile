@@ -13,7 +13,12 @@ EMACS_BATCH_BASE = $(EMACS) --batch -Q \
 	--eval "(require 'package)" \
 	--eval "(setq package-user-dir (expand-file-name \"elpa\" user-emacs-directory) package-quickstart-file (expand-file-name \"elpa/package-quickstart.el\" user-emacs-directory))" \
 	--eval "(package-initialize)" \
-	--eval "(add-to-list 'load-path (expand-file-name \"$(LISP_DIR)\"))"
+	--eval "(add-to-list 'load-path (expand-file-name \"$(LISP_DIR)\"))" \
+	--eval "(when (featurep 'native-compile) \
+	         (setq package-native-compile t \
+	               native-comp-deferred-compilation nil \
+	               native-comp-async-jobs-number 4 \
+	               native-comp-async-report-warnings-errors nil))"
 
 .PHONY: help all compile compile-local compile-packages quickstart clean
 
@@ -30,7 +35,7 @@ all: compile
 compile: compile-local compile-packages quickstart
 
 compile-local:
-	$(EMACS_BATCH_BASE) -f batch-byte-compile $(LOCAL_EL)
+	$(EMACS_BATCH_BASE) -f batch-native-compile $(LOCAL_EL)
 
 compile-packages:
 	$(EMACS_BATCH_BASE) --eval "(package-recompile-all)"
@@ -39,4 +44,5 @@ quickstart:
 	$(EMACS_BATCH_BASE) --eval "(package-quickstart-refresh)"
 
 clean:
-	rm -f $(EMACS_DIR)/early-init.elc $(EMACS_DIR)/init.elc $(LISP_DIR)/*.elc
+	@echo "Cleaning .elc and .eln files..."
+	@find $(EMACS_DIR) -type f \( -name "*.elc" -o -name "*.eln" \) -delete
