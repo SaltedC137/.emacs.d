@@ -10,11 +10,12 @@
 ;;; Commentary:
 ;; (c) Sallyface, 2020-2021
 
-(use-package benchmark-init
-  :ensure t
-  :demand t
-  :config
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
+;; (use-package benchmark-init
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;;; Code:
 
@@ -160,19 +161,14 @@
 ;; modeline
 (use-package doom-modeline
   :ensure t
-  :defer t
   :init (doom-modeline-mode 1))
 
 
 ;; icon
 (use-package nerd-icons
-  :ensure t)
-
-;; dashboard
-(use-package dashboard
   :ensure t
-  :config
-  (dashboard-setup-startup-hook))
+  :if (display-graphic-p)
+  :defer t)
 
 
 ;; Local Variables:

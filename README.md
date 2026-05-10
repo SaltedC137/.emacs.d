@@ -21,20 +21,20 @@ emacs
 
 ## Features
 
-**IDE:** Go-to definition, find references, completions, diagnostics via eglot  
-**Editing:** Multiple cursors, move lines, snippets, bracket highlighting  
-**UI:** Modern modeline, accessible themes, icon support  
+**IDE:** Go-to definition, find references, completions, diagnostics via eglot
+**Editing:** Multiple cursors, move lines, snippets, bracket highlighting
+**UI:** Modern modeline, accessible themes, icon support
 **Utilities:** Fuzzy search, git integration, buffer management
 
 ## Performance
 
-Startup: **~0.77s** (M1 Mac, SSD, Emacs 29.3)
+Startup: **~0.77s** (7945HX Fedora i3, SSD, Emacs 29.3)
 
 Optimizations:
 - Deferred garbage collection at startup
 - Lazy package loading (packages only load on demand)
 - Bytecode compilation for all modules
-- Native compilation enabled (Emacs 28+)
+- Native compilation enabled when Emacs is built with `--with-native-compilation`
 - Package quickstart cache (Emacs 27.1+)
 
 ## Modules
@@ -55,10 +55,12 @@ Optimizations:
 ```bash
 make compile        # Compile everything
 make compile-local  # Compile config only
-make clean          # Remove all .elc files
+make compile-native  # Compile native code only, if supported
+make clean          # Remove all .elc/.eln files
 ```
 
 All `.elc` files are byte-compiled for faster loading.
+`.eln` files are generated only when the Emacs binary supports native compilation.
 
 ## Language Support
 
@@ -95,6 +97,7 @@ Custom bindings can be added to `custom.el`.
 | LSP not working | Server not installed | Install language server, run `M-x eglot-reconnect` |
 | Completions not showing | Company mode off | Run `M-x company-mode` |
 | Slow startup | Packages not compiled | Run `make compile` |
+| No `.eln` files | Emacs lacks native compilation support | Use an Emacs build with `--with-native-compilation` or rely on `.elc` only |
 | Stale bytecode | Old .elc files | Run `make clean && make compile` |
 
 See init files for detailed settings.
@@ -115,6 +118,6 @@ Recompile after changes: `make compile`
 
 ## License & Attribution
 
-Original: **Cabins Kong** (github.com/cabins)  
-Maintained by: **Sally Face** (SaltedC137)  
+Original: **Cabins Kong** (github.com/cabins)
+Maintained by: **Sally Face** (SaltedC137)
 Requires: Emacs 27+

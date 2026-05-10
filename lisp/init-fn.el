@@ -80,7 +80,29 @@
      t)
     (goto-line saved-line-number)))
 
+;; compilation
 
+(defun my/native-compile-all-config ()
+  (interactive)
+  (dolist (file (append
+                 (list (expand-file-name "early-init.el" user-emacs-directory)
+                       (expand-file-name "init.el" user-emacs-directory))
+                 (directory-files (expand-file-name "lisp" user-emacs-directory)
+                                  t "\\.el$")))
+    (when (file-exists-p file)
+      (byte-compile-file file)     ;; gengerate .elc
+      (native-compile file)        ;; compile .eln
+      (message "finish：%s" file))))
+
+
+
+;; time
+
+(defmacro +measure-time (&rest body)
+  "Measure the time it takes to evaluate BODY."
+  `(let ((time (current-time)))
+     ,@body
+     (message "%.06fs" (float-time (time-since time)))))
 
 
 (provide 'init-fn)

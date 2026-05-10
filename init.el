@@ -40,22 +40,28 @@
 (load-theme 'monokai-pro)
 
 ;; settings for independent packages and etc.
-(let ((load-prefer-newer t))
-  (require 'init-fn)
-  (require 'init-system)
-  (require 'init-elpa)
-  (require 'init-package)
-  (require 'init-builtin)
-  (require 'init-ide)
-  (require 'init-ui)
-  (require 'init-kbd)
-  (require 'init-dash))
+(require 'init-fn)
+(require 'init-system)
+(require 'init-elpa)
+(require 'init-package)
+(require 'init-builtin)
+(require 'init-ide)
+(require 'init-ui)
+(require 'init-kbd)
+(require 'init-dash)
 
 ;; load custom file at last
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
-  (let ((load-prefer-newer t))
-    (load custom-file)))
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (run-with-idle-timer
+               1.5 nil
+               (lambda ()
+                 (load custom-file nil 'nomessage))))))
+
+;; message
+(message "load >> %s" load-file-name)
 
 (provide 'init)
 

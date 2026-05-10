@@ -15,7 +15,8 @@
    dashboard-mode-map
    ("q" . quit-dashboard)
    ("M-r" . restore-session))
-  :hook (dashboard-mode . (lambda () (setq-local frame-title-format nil)))
+  :hook (dashboard-mode . (lambda () (setq-local frame-title-format nil)
+                            (display-line-numbers-mode -1)))
   :init
   (setq dashboard-navigator-buttons
         `(((,(if (fboundp 'nerd-icons-octicon)
@@ -98,9 +99,9 @@
   (dashboard-path-style 'truncate-middle)
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
-  (dashboard-projects-backend 'projectile)
+  (dashboard-projects-backend (if (< emacs-major-version 28) 'projectile 'project-el))
   (dashboard-path-style 'truncate-middle)
-  (dashboard-path-max-length 60)
+  (dashboard-path-max-length 40)
   (dashboard-startup-banner
    "~/.emacs.d/assets/GNUEmacs.png")
   (dashboard-image-banner-max-width 400)
@@ -113,9 +114,13 @@
      dashboard-insert-newline
      dashboard-insert-newline
      dashboard-insert-banner
+     dashboard-insert-newline
      dashboard-insert-banner-title
+     dashboard-insert-newline
      dashboard-insert-navigator
+     dashboard-insert-newline
      dashboard-insert-init-info
+     dashboard-insert-newline
      dashboard-insert-items
      dashboard-insert-footer)))
 

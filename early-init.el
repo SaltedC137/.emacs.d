@@ -3,6 +3,8 @@
 ;; Runs before package and UI initializetion happens.
 ;;; Code:
 
+
+(setq native-comp-verbose 1)
 ;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold most-positive-fixnum)
 (add-hook 'after-init-hook (lambda ()
@@ -21,7 +23,7 @@
 ;; initialization, so we must prevent Emacs from doing it early!
 (setq package-enable-at-startup nil
       package-quickstart t)
-(setq load-prefer-newer noninteractive)
+(setq load-prefer-newer nil)
 
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
