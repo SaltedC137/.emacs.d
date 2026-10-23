@@ -1,9 +1,10 @@
 ;;; init.el --- the entry of emacs config -*- lexical-binding: t -*-
 
 ;; Author: Cabins
-;; Maintainer: Cabins
+;; Revise by: Aska lyn
 ;; Version: 1.0
 ;; Homepage: https://github.com/cabins
+;; Homepage: https://github.com/SaltedC137
 
 ;;; Commentary:
 ;; (c) Cabins Kong, 2020-2021

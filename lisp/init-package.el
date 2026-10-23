@@ -80,16 +80,6 @@
   :commands (move-text-default-bindings)
   :init (cabins/defer-startup 0.8 #'move-text-default-bindings))
 
-;; Multiple cursors
-(use-package multiple-cursors
-  :bind (("C-c d" . mc/mark-next-like-this)
-         ("C-c D" . mc/mark-all-like-this)
-         ("C-c m s" . mc/skip-to-next-like-this)
-         ("C-S-c C-S-c" . mc/edit-lines))
-  :config
-  ;; 让 mc 自动对所有光标运行已知的安全命令
-  (setq mc/always-run-for-all t))
-
 ;; Settings for projectile (use builtin project in Emacs 28)
 (use-package projectile
   :when (< emacs-major-version 28)
@@ -169,6 +159,9 @@
   :ensure t
   :if (display-graphic-p)
   :defer t)
+
+
+
 
 
 ;; Local Variables:

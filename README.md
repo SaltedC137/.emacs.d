@@ -20,7 +20,7 @@ emacs
 ```
 
 ## Features
-
+x
 **IDE:** Go-to definition, find references, completions, diagnostics via eglot
 **Editing:** Multiple cursors, move lines, snippets, bracket highlighting
 **UI:** Modern modeline, accessible themes, icon support

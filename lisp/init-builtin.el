@@ -72,7 +72,8 @@
 	          isearch-lazy-count t
 	          laz2y-count-prefix-format "%s/%s: ")
 (setq completion-ignored-extensions '(".o" ".elc" "~" ".bin" ".bak" ".obj" ".map" ".a" ".ln" ".class"))
-(fido-mode t)
+;; ido-mode is enabled later in init-kbd.el via rc/require
+;; fido-mode deliberately NOT enabled — conflicts with ido + smex
 
 ;; Line Number
 ;; Display line numbers globally in all buffers (Emacs 26+)

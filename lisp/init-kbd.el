@@ -10,10 +10,6 @@
 ;;; Commentary:
 ;; (c) Cabins Kong, 2020-2021
 
-;;; Code:
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                    Global Keybinds Dependencies
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package crux)
 (use-package format-all
   :diminish " Fmt."
@@ -33,10 +29,21 @@
 ;;; Emacs Basic Keys ------------------------------
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(require 'ido)
+(rc/require 'ido)
 (ido-mode t)
-(require 'smex)
+(rc/require 'smex)
 (global-set-key (kbd "M-x") 'smex) ; Enhanced M-x
+
+;; multi cursor
+(rc/require 'multiple-cursors)
+
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->")         'mc/mark-next-like-this)
+(global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
+(global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this)
+
 
 
 (global-set-key (kbd "C-c ,") #'crux-find-user-init-file)	; Open Settings
@@ -52,10 +59,12 @@
 (global-set-key (kbd "C-c <up>") 'windmove-up)
 (global-set-key (kbd "C-c <down>") 'windmove-down)
 
-;; Zoom
-(global-set-key (kbd "C-=") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "C-0") (lambda () (interactive) (text-scale-set 0)))
+(global-set-key (kbd "C-=") #'my-font-increase)
+(global-set-key (kbd "C--") #'my-font-decrease)
+(global-set-key (kbd "C-0")
+                (lambda ()
+                  (interactive)
+                  (text-scale-set 0)))
 
 ;; Window Split
 (global-set-key (kbd "C-c v") 'split-window-right)

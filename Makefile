@@ -1,6 +1,6 @@
 # compile.el - A Makefile for compiling Emacs Lisp files in the .emacs.d directory
 #author: Sally Face (github/SaltedC137)
-#date: 2026-04-30
+# This Makefile provides targets for byte-compiling and native-compiling Emacs Lisp files in the .emacs.d directory, as well as refreshing the package quickstart cache. It also includes a clean target to remove compiled files.
 
 
 EMACS ?= emacs

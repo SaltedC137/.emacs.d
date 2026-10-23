@@ -26,7 +26,7 @@
 
   (interactive)
   (let* ((installed-fonts (font-family-list))
-         (efl '("Cascadia Code" "Source Code Pro" "JetBrains Mono" "Courier New" "Monaco" "Ubuntu Mono"))
+         (efl '("Cascadia Code NF" "Cascadia Code" "Source Code Pro" "JetBrains Mono" "Courier New" "Monaco" "Ubuntu Mono"))
 	 (cfl '("楷体" "黑体" "STHeiti" "STKaiti"))
 	 (cf (available-font cfl installed-fonts))
 	 (ef (available-font efl installed-fonts)))
@@ -70,6 +70,15 @@
 (display-battery-mode)
 
 
+;; dim #if 0 ... #endif blocks
+(defface my-c-inactive-face
+  '((t :foreground "#505050"))
+  "Face for inactive preprocessor regions (#if 0 ... #endif)."
+  :group 'faces)
+
+(defun my-c-mode-inactive-setup ()
+  (setq-local c-opt-inactive-face 'my-c-inactive-face))
+(add-hook 'c-mode-common-hook #'my-c-mode-inactive-setup)
 
 
 (provide 'init-ui)

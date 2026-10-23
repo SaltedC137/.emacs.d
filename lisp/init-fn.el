@@ -105,5 +105,41 @@
      (message "%.06fs" (float-time (time-since time)))))
 
 
+
+;; increase font
+
+
+(defvar my-font-size 140)
+
+(defun my-font-increase ()
+  (interactive)
+  (setq my-font-size (+ my-font-size 10))
+  (set-face-attribute 'default nil
+                      :height my-font-size))
+
+(defun my-font-decrease ()
+  (interactive)
+  (setq my-font-size (- my-font-size 10))
+  (set-face-attribute 'default nil
+                      :height my-font-size))
+
+;; sl require package
+(defvar rc/package-contents-refreshed nil)
+
+(defun rc/package-refresh-contents-once ()
+  (when (not rc/package-contents-refreshed)
+    (setq rc/package-contents-refreshed t)
+    (package-refresh-contents)))
+
+(defun rc/require-one-package (package)
+  (when (not (package-installed-p package))
+    (rc/package-refresh-contents-once)
+    (package-install package)))
+
+(defun rc/require (&rest packages)
+  (dolist (package packages)
+    (rc/require-one-package package)))
+
+
 (provide 'init-fn)
 ;;;

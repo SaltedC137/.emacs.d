@@ -17,7 +17,11 @@
          ("C-c e i" . eglot-code-action-organize-imports)
          ("C-c e q" . eglot-code-action-quickfix))
   :config
-  (add-to-list 'eglot-server-programs '(web-mode "vls")))
+  (add-to-list 'eglot-server-programs '(web-mode "vls"))
+  (add-to-list 'eglot-server-programs '(holyc-mode . ("hcc" "-lsp")))
+  )
+
+(add-hook 'holyc-mode-hook #'eglot-ensure)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; settings for Program Languages ;;
